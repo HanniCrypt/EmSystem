@@ -32,6 +32,20 @@ const AdminNewUser = () => {
   const handleAddNewUser = async (e) => {
     e.preventDefault();
 
+    // Show confirmation dialog based on role
+    let confirmMessage;
+    if (role === "hr") {
+      confirmMessage = "Are you sure you want to add a new HR user? They will have access to employee management.";
+    } else if (role === "admin") {
+      confirmMessage = "Warning: You are about to add a new admin user. They will have full system access and all administrative privileges. Are you sure you want to proceed?";
+    } else {
+      confirmMessage = "Are you sure you want to add a new employee?";
+    }
+
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
     try {
       const response = await axios.post(
         `${API_URL}addNewUser`,

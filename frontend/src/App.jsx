@@ -45,7 +45,7 @@ function App() {
           </Route>
    
           <Route element={<EmployeeLayout />}>
-            <Route path="/employee/home" element={<EmployeeHome />} />
+            <Route path="/employee/home" element={<EmployeeHome />} />  
             <Route path="/employee/profile" element={<EmployeeProfile />} />
           </Route>
 

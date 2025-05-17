@@ -64,6 +64,7 @@ function HREmployeeList() {
   const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [editModal, setEditModal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [departments, setDepartments] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState("");
@@ -162,13 +163,33 @@ function HREmployeeList() {
   return (
     <div className="max-w-7xl mx-auto">
       <div className="p-6">
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-800">Employee Management</h1>
-          <CustomDropdown
-            value={selectedDepartment}
-            onChange={setSelectedDepartment}
-            departments={departments}
-          />
+          <div className="flex items-center gap-4">
+            {/* Search Bar */}
+            <div className="relative">
+              <div className="bg-white rounded-xl shadow-sm p-2 flex items-center gap-3 border border-gray-100">
+                <div className="px-3 py-2 bg-gray-50 rounded-lg">
+                  <svg className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  placeholder="Search username"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-[200px] px-3 py-2 text-sm text-gray-700 bg-transparent focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <CustomDropdown
+              value={selectedDepartment}
+              onChange={setSelectedDepartment}
+              departments={departments}
+            />
+          </div>
         </div>
 
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
@@ -185,12 +206,17 @@ function HREmployeeList() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {employees?.filter(
+                {employees
+                  ?.filter(
                     (user) =>
                       (selectedDepartment
                         ? user.dept_name === selectedDepartment
+                        : true) &&
+                      (searchQuery
+                        ? user.username.toLowerCase().includes(searchQuery.toLowerCase())
                         : true)
-                  ).map((employee) => (
+                  )
+                  .map((employee) => (
                   <tr key={employee.user_id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex justify-center">
@@ -252,100 +278,146 @@ function HREmployeeList() {
           onClick={() => setEditModal(false)}
           aria-hidden="true"
         />
-        <div className="relative z-50 w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
-          <h3 className="text-2xl font-semibold text-gray-800 mb-6">Edit Employee</h3>
-          <form onSubmit={(e) => handleEditEmployee(e)} className="space-y-6">
-            <div>
-              <div className="mb-4 flex justify-center">
-                <div className="w-28 h-28 rounded-full border-4 border-gray-100 bg-gray-50 flex items-center justify-center overflow-hidden">
-                  {selectedEmployee?.avatar ? (
-                    <img
-                      src={`data:image/jpeg;base64,${selectedEmployee?.avatar}`}
-                      alt="Avatar"
-                      className="w-full h-full object-cover"
+        <div className="relative z-50 w-full max-w-2xl rounded-2xl bg-white p-8 shadow-xl">
+          <div className="flex justify-between items-center mb-8">
+            <h3 className="text-2xl font-semibold text-gray-800">Edit Employee</h3>
+            <button
+              onClick={() => setEditModal(false)}
+              className="p-2 text-gray-400 hover:text-gray-500 rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <form onSubmit={(e) => handleEditEmployee(e)} className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Left Column - Avatar and Role */}
+              <div className="space-y-6">
+                <div>
+                  <div className="flex flex-col items-center space-y-4">
+                    <div className="w-40 h-40 rounded-2xl bg-gray-50 ring-4 ring-gray-100 flex items-center justify-center overflow-hidden">
+                      {selectedEmployee?.avatar ? (
+                        <img
+                          src={`data:image/jpeg;base64,${selectedEmployee?.avatar}`}
+                          alt="Avatar"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-6xl font-bold text-gray-300">
+                          {selectedEmployee?.username?.charAt(0).toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+                    <div className="w-full">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Change Avatar
+                      </label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="w-full px-4 py-2.5 text-sm text-gray-700 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Role Field (Read-only) */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Role
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value="employee"
+                      disabled
+                      className="w-full px-4 py-2.5 text-sm text-gray-500 border border-gray-200 rounded-xl bg-gray-50 cursor-not-allowed"
                     />
-                  ) : (
-                    <span className="text-gray-400">no avatar</span>
-                  )}
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                      <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <label className="block mb-2 text-sm font-medium text-gray-700">
-                Update Avatar
-              </label>
-              <input
-                type="file"
-                accept="image/*"
-                id="avatar"
-                name="avatar"
-                onChange={handleFileChange}
-                className="w-full px-4 py-2 text-sm text-gray-700 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#260058] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"
-              />
+
+              {/* Right Column - Other Fields */}
+              <div className="space-y-6">
+                {/* Username Field */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Username
+                  </label>
+                  <input
+                    type="text"
+                    name="username"
+                    value={selectedEmployee?.username}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2.5 text-sm text-gray-700 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-700 hover:border-gray-300 transition-colors"
+                  />
+                </div>
+
+                {/* Password Field */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    New Password
+                  </label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={selectedEmployee?.password}
+                    onChange={handleChange}
+                    placeholder="Leave blank to keep current password"
+                    className="w-full px-4 py-2.5 text-sm text-gray-700 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-700 hover:border-gray-300 transition-colors"
+                  />
+                </div>
+
+                {/* Department Field */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Department
+                  </label>
+                  <select
+                    name="dept_id"
+                    value={selectedEmployee?.dept_id || ""}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2.5 text-sm text-gray-700 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-700 hover:border-gray-300 transition-colors bg-white"
+                  >
+                    <option value="">Select Department</option>
+                    {departments.map((dept) => (
+                      <option key={dept.dept_id} value={dept.dept_id}>
+                        {dept.dept_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Current Department Display */}
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <div className="text-sm text-gray-600">Current Department</div>
+                  <div className="font-medium text-gray-900">
+                    {selectedEmployee?.dept_name || "Not Assigned"}
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div>
-              <label className="block mb-2 text-sm font-medium text-gray-700">
-                Username
-              </label>
-              <input
-                id="username"
-                name="username"
-                value={selectedEmployee?.username}
-                onChange={handleChange}
-                className="w-full px-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#260058]"
-                placeholder="Enter username"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block mb-2 text-sm font-medium text-gray-700">
-                New Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                value={selectedEmployee?.password}
-                onChange={handleChange}
-                className="w-full px-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#260058]"
-                placeholder="Leave blank to keep current password"
-              />
-            </div>
-
-            <div>
-              <label className="block mb-2 text-sm font-medium text-gray-700">
-                Department
-              </label>
-              <p className="text-sm text-gray-500 mb-2">
-                Current: <span className="font-medium text-gray-900">{departments.find((d) => d.dept_name === selectedEmployee?.dept_name)?.dept_name || "Not Assigned"}</span>
-              </p>
-              <select
-                id="department"
-                name="dept_id"
-                value={selectedEmployee?.dept_id || ""}
-                onChange={handleChange}
-                className="w-full px-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#260058] bg-white"
-              >
-                <option value="">Select Department</option>
-                {departments.map((dept) => (
-                  <option key={dept.dept_id} value={dept.dept_id}>
-                    {dept.dept_name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex justify-end gap-3 pt-4">
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-3 pt-8 mt-4 border-t border-gray-100">
               <button
                 type="button"
                 onClick={() => setEditModal(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                className="px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 text-sm font-medium text-white bg-[#260058] hover:bg-[#3e0091] rounded-lg transition-colors"
+                className="px-6 py-2.5 text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 rounded-xl transition-colors shadow-sm hover:shadow-md"
               >
                 Save Changes
               </button>

@@ -700,7 +700,10 @@ function fetchUserDetails()
 
     $user_id = $_SESSION['user_id'];
 
-    $sql = "SELECT user_id, avatar, username, role, created_at FROM users WHERE user_id = ?";
+    $sql = "SELECT u.user_id, u.avatar, u.username, u.role, u.created_at, d.dept_name, d.dept_id 
+            FROM users u 
+            LEFT JOIN departments d ON u.dept_id = d.dept_id 
+            WHERE u.user_id = ?";
     $stmt = $connect->prepare($sql);
 
     if (!$stmt) {

@@ -7,6 +7,40 @@ const API_URL = "http://localhost/emsystem/backend/index.php?action=";
 function AdminProfile() {
   const { user, setUser } = useOutletContext();
   const [showModal, setShowModal] = useState(false);
+  const [departments, setDepartments] = useState([]);
+  const [formData, setFormData] = useState({
+    username: "",
+    newPassword: "",
+    role: "",
+    dept_id: "",
+  });
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        username: user.username || "",
+        newPassword: "",
+        role: user.role || "",
+        dept_id: user.dept_id || "",
+      });
+    }
+  }, [user]);
+
+  useEffect(() => {
+    // Fetch departments when component mounts
+    const fetchDepartments = async () => {
+      try {
+        const response = await axios.get(`${API_URL}departments`, {
+          withCredentials: true,
+        });
+        setDepartments(response.data);
+      } catch (error) {
+        console.error("Failed to fetch departments", error);
+      }
+    };
+
+    fetchDepartments();
+  }, []);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -22,22 +56,40 @@ function AdminProfile() {
     }
   };
 
-  const handleAvatarUpdate = async () => {
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleProfileUpdate = async () => {
     try {
-      await axios.post(
-        `${API_URL}updateAvatar`,
+      const response = await axios.post(
+        `${API_URL}updateEmployee`,
         {
+          user_id: user.user_id,
+          username: formData.username,
+          newPass: formData.newPassword,
           avatar: user.avatar,
+          dept_id: formData.dept_id,
         },
         {
           withCredentials: true,
         }
       );
 
-      setShowModal(false);
-      // window.location.reload(); 
+      if (response.data.type === "success") {
+        setUser((prev) => ({
+          ...prev,
+          username: formData.username,
+          dept_id: formData.dept_id,
+        }));
+        setShowModal(false);
+      }
     } catch (error) {
-      console.error("Failed to update avatar", error);
+      console.error("Failed to update profile", error);
     }
   };
 
@@ -97,15 +149,23 @@ function AdminProfile() {
               })}
             </div>
           </div>
+          <div className="bg-gray-50 rounded-xl p-4">
+            <div className="text-sm text-gray-500 mb-1">Department</div>
+            <div className="font-medium text-gray-900">{user?.dept_name || "Not Assigned"}</div>
+          </div>
+          <div className="bg-gray-50 rounded-xl p-4">
+            <div className="text-sm text-gray-500 mb-1">Role</div>
+            <div className="font-medium text-gray-900 capitalize">{user?.role}</div>
+          </div>
         </div>
       </div>
 
       {/* MODAL */}
       {showModal && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-semibold text-gray-900">Update Avatar</h2>
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl p-8 m-4">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-2xl font-semibold text-gray-900">Edit Profile</h2>
               <button
                 onClick={() => setShowModal(false)}
                 className="p-2 text-gray-400 hover:text-gray-500 rounded-full hover:bg-gray-100 transition-colors"
@@ -116,49 +176,134 @@ function AdminProfile() {
               </button>
             </div>
 
-            <div className="space-y-6">
-              <div className="flex justify-center mb-6">
-                <div className="w-32 h-32 rounded-2xl bg-gray-50 ring-4 ring-purple-100 flex items-center justify-center overflow-hidden">
-                  {user?.avatar ? (
-                    <img
-                      src={`data:image/jpeg;base64,${user?.avatar}`}
-                      alt="Avatar"
-                      className="w-full h-full object-cover"
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Left Column - Avatar Section */}
+              <div className="space-y-6">
+                <div>
+                  <div className="flex flex-col items-center space-y-4">
+                    <div className="w-40 h-40 rounded-2xl bg-gray-50 ring-4 ring-purple-100 flex items-center justify-center overflow-hidden">
+                      {user?.avatar ? (
+                        <img
+                          src={`data:image/jpeg;base64,${user?.avatar}`}
+                          alt="Avatar"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-6xl font-bold text-gray-300">
+                          {user?.username?.charAt(0).toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+                    <div className="w-full">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Change Avatar
+                      </label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="w-full px-4 py-2.5 text-sm text-gray-700 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-purple-50 file:text-gray-700 hover:file:bg-purple-100"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Role Field (Read-only) */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Role
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={formData.role}
+                      disabled
+                      className="w-full px-4 py-2.5 text-sm text-gray-500 border border-gray-200 rounded-xl bg-gray-50 cursor-not-allowed"
                     />
-                  ) : (
-                    <span className="text-4xl font-bold text-gray-300">
-                      {user?.username?.charAt(0).toUpperCase()}
-                    </span>
-                  )}
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                      <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Choose new picture
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="w-full px-4 py-2.5 text-sm text-gray-700 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#260058] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
-                />
-              </div>
+              {/* Right Column - Other Fields */}
+              <div className="space-y-6">
+                {/* Username Field */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Username
+                  </label>
+                  <input
+                    type="text"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2.5 text-sm text-gray-700 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-700 hover:border-gray-300 transition-colors"
+                  />
+                </div>
 
-              <div className="flex justify-end gap-3 pt-4">
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleAvatarUpdate}
-                  className="px-4 py-2.5 text-sm font-medium text-white bg-[#260058] hover:bg-[#3e0091] rounded-xl transition-colors"
-                >
-                  Save Changes
-                </button>
+                {/* Password Field */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    New Password
+                  </label>
+                  <input
+                    type="password"
+                    name="newPassword"
+                    value={formData.newPassword}
+                    onChange={handleInputChange}
+                    placeholder="Leave blank to keep current password"
+                    className="w-full px-4 py-2.5 text-sm text-gray-700 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-700 hover:border-gray-300 transition-colors"
+                  />
+                </div>
+
+                {/* Department Field */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Department
+                  </label>
+                  <select
+                    name="dept_id"
+                    value={formData.dept_id}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2.5 text-sm text-gray-700 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-700 hover:border-gray-300 transition-colors bg-white"
+                  >
+                    <option value="">Select Department</option>
+                    {departments.map((dept) => (
+                      <option key={dept.dept_id} value={dept.dept_id}>
+                        {dept.dept_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Current Department Display */}
+                <div className="bg-purple-50 rounded-xl p-4">
+                  <div className="text-sm text-gray-600">Current Department</div>
+                  <div className="font-medium text-gray-900">
+                    {user?.dept_name || "Not Assigned"}
+                  </div>
+                </div>
               </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-3 pt-8 mt-4 border-t border-gray-100">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleProfileUpdate}
+                className="px-6 py-2.5 text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 rounded-xl transition-colors shadow-sm hover:shadow-md"
+              >
+                Save Changes
+              </button>
             </div>
           </div>
         </div>

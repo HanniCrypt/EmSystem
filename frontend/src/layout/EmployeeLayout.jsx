@@ -2,17 +2,12 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import Footer from "../components/Footer";
-import { MdHome, MdSettings } from "react-icons/md";
+import { MdSettings } from "react-icons/md";
 import { IoChevronBackOutline } from "react-icons/io5";
 
 const API_URL = "http://localhost/emsystem/backend/index.php?action=";
 
 const LINKS = [
-  {
-    path: "/employee/home",
-    name: "Home",
-    icon: <MdHome size={20} />,
-  },
   {
     path: "/employee/profile",
     name: "Profile",
@@ -55,6 +50,9 @@ const EmployeeLayout = () => {
             break;
           case "hr":
             navigate("/hr/employees");
+            break;
+          case "employee":
+            navigate("/employee/profile");
             break;
         }
 
