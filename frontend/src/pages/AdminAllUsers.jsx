@@ -279,20 +279,42 @@ function AdminAllUsersList() {
   const handleEditEmployee = async (e) => {
     e.preventDefault();
 
-    await axios.post(
-      `${API_URL}updateEmployee`,
-      {
-        user_id: selectedUser.user_id,
-        avatar: selectedUser.avatar,
-        username: selectedUser.username,
-        newPass: selectedUser.password,
-        dept_id: selectedUser.dept_id
-      },
-      { withCredentials: true }
-    );
+    try {
+      const response = await axios.post(
+        `${API_URL}updateEmployee`,
+        {
+          user_id: selectedUser.user_id,
+          avatar: selectedUser.avatar,
+          username: selectedUser.username,
+          newPass: selectedUser.password,
+          dept_id: selectedUser.dept_id
+        },
+        { withCredentials: true }
+      );
 
-    setEditModal(false);
-    fetchAllUsers();
+      if (response.data.type === "success") {
+        setToast({
+          show: true,
+          message: `Successfully updated user "${selectedUser.username}"`,
+          type: "success"
+        });
+        setEditModal(false);
+        fetchAllUsers();
+      } else {
+        setToast({
+          show: true,
+          message: response.data.message || "Failed to update user",
+          type: "error"
+        });
+      }
+    } catch (error) {
+      console.error("Error updating user:", error);
+      setToast({
+        show: true,
+        message: "An error occurred while updating the user",
+        type: "error"
+      });
+    }
   };
 
   const roles = [...new Set(users.map((u) => u.role))];

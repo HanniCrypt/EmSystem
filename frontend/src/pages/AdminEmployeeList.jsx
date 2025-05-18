@@ -271,20 +271,42 @@ function AdminEmployeeList() {
   const handleEditEmployee = async (e) => {
     e.preventDefault();
 
-    await axios.post(
-      `${API_URL}updateEmployee`,
-      {
-        user_id: selectedEmployee.user_id,
-        avatar: selectedEmployee.avatar,
-        username: selectedEmployee.username,
-        newPass: selectedEmployee.password,
-        dept_id: selectedEmployee.dept_id,
-      },
-      { withCredentials: true }
-    );
+    try {
+      const response = await axios.post(
+        `${API_URL}updateEmployee`,
+        {
+          user_id: selectedEmployee.user_id,
+          avatar: selectedEmployee.avatar,
+          username: selectedEmployee.username,
+          newPass: selectedEmployee.password,
+          dept_id: selectedEmployee.dept_id,
+        },
+        { withCredentials: true }
+      );
 
-    setEditModal(false);
-    fetchAllEmployees();
+      if (response.data.type === "success") {
+        setToast({
+          show: true,
+          message: `Successfully updated employee "${selectedEmployee.username}"`,
+          type: "success"
+        });
+        setEditModal(false);
+        fetchAllEmployees();
+      } else {
+        setToast({
+          show: true,
+          message: response.data.message || "Failed to update employee",
+          type: "error"
+        });
+      }
+    } catch (error) {
+      console.error("Error updating employee:", error);
+      setToast({
+        show: true,
+        message: "An error occurred while updating the employee",
+        type: "error"
+      });
+    }
   };
 
   return (
