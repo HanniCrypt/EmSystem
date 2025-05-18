@@ -786,7 +786,7 @@ function getAllUsersCount()
 {
     global $connect;
 
-    $sql = 'SELECT role, COUNT(*) as totalCount FROM users GROUP BY role';
+    $sql = 'SELECT role, COUNT(*) as totalCount FROM users GROUP BY role ORDER BY FIELD(role, "admin", "hr", "employee")';
     $stmt = $connect->prepare($sql);
     $stmt->execute();
     $result = $stmt->get_result();
