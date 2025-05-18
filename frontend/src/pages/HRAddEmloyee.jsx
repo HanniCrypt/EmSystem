@@ -116,6 +116,7 @@ const HRAddEmployee = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [avatar, setAvatar] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [department, setDepartment] = useState("");
   const [departments, setDepartments] = useState([]);
@@ -199,6 +200,7 @@ const HRAddEmployee = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
+        setAvatarPreview(reader.result);
         setAvatar(reader.result.split(",")[1]);
       };
       reader.readAsDataURL(file);
@@ -232,58 +234,84 @@ const HRAddEmployee = () => {
             <label className="block text-sm font-semibold text-gray-700">
               Avatar
             </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="w-full px-4 py-3 text-base text-gray-700 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 hover:border-gray-900 file:mr-5 file:py-2.5 file:px-6 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 file:cursor-pointer"
-            />
+            <div className="flex items-center space-x-6">
+              <div className="shrink-0">
+                <div className="h-24 w-24 rounded-full overflow-hidden bg-gray-100 border-2 border-gray-200">
+                  {avatarPreview ? (
+                    <img
+                      src={avatarPreview}
+                      alt="Avatar preview"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="h-full w-full flex items-center justify-center">
+                      <svg className="h-12 w-12 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="flex-grow">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="w-full px-4 py-3 text-base text-gray-700 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 hover:border-gray-900 file:mr-5 file:py-2.5 file:px-6 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 file:cursor-pointer"
+                />
+                <p className="mt-1 text-sm text-gray-500">
+                  Recommended: Jpeg, Jpg, Max 2MB
+                </p>
+              </div>
+            </div>
           </div>
 
-          <div className="space-y-3">
-            <label className="block text-sm font-semibold text-gray-700">
-              Username
-            </label>
-            <input
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-3 text-base border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 hover:border-gray-900"
-              placeholder="Enter username"
-              required
-            />
-          </div>
+          <div className="grid grid-cols-1 gap-6">
+            <div className="space-y-3">
+              <label className="block text-sm font-semibold text-gray-700">
+                Username
+              </label>
+              <input
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full px-4 py-3 text-base border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 hover:border-gray-900"
+                placeholder="Enter username"
+                required
+              />
+            </div>
 
-          <div className="space-y-3">
-            <label className="block text-sm font-semibold text-gray-700">
-              Password
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 text-base border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 hover:border-gray-900"
-              placeholder="Enter password"
-              required
-            />
-          </div>
+            <div className="space-y-3">
+              <label className="block text-sm font-semibold text-gray-700">
+                Password
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 text-base border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 hover:border-gray-900"
+                placeholder="Enter password"
+                required
+              />
+            </div>
 
-          <div className="space-y-3">
-            <label className="block text-sm font-semibold text-gray-700">
-              Department
-            </label>
-            <select
-              value={department}
-              onChange={(e) => setDepartment(e.target.value)}
-              className="w-full px-4 py-3 text-base border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 hover:border-gray-900 bg-white cursor-pointer"
-              required
-            >
-              <option value="">Select Department</option>
-              {departments.map((dept, i) => (
-                <option key={i} value={dept.dept_id}>
-                  {dept.dept_name}
-                </option>
-              ))}
-            </select>
+            <div className="space-y-3">
+              <label className="block text-sm font-semibold text-gray-700">
+                Department
+              </label>
+              <select
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
+                className="w-full px-4 py-3 text-base border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 hover:border-gray-900 bg-white cursor-pointer"
+                required
+              >
+                <option value="">Select Department</option>
+                {departments.map((dept, i) => (
+                  <option key={i} value={dept.dept_id}>
+                    {dept.dept_name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="pt-6">
