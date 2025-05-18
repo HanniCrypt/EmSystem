@@ -3,8 +3,64 @@ import React, { useEffect, useState } from "react";
 
 const API_URL = "http://localhost/emsystem/backend/index.php?action=";
 
+const CustomDropdown = ({ value, onChange, options, label, icon }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="relative">
+      <div 
+        className="bg-white rounded-xl shadow-sm p-2 flex items-center gap-3 border border-gray-100 cursor-pointer"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <div className="px-3 py-2 bg-gray-50 rounded-lg">
+          {icon}
+        </div>
+        <div className="min-w-[200px] px-3 py-2 text-sm text-gray-700 font-medium">
+          {value || `All ${label}`}
+          <svg className="h-5 w-5 text-gray-400 absolute right-4 top-1/2 transform -translate-y-1/2" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+          </svg>
+        </div>
+      </div>
+      
+      {isOpen && (
+        <>
+          <div 
+            className="fixed inset-0" 
+            onClick={() => setIsOpen(false)}
+          />
+          <div className="absolute top-full left-0 mt-1 w-full bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
+            <div 
+              className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm text-gray-700"
+              onClick={() => {
+                onChange("");
+                setIsOpen(false);
+              }}
+            >
+              All {label}
+            </div>
+            {options.map((option) => (
+              <div
+                key={option}
+                className="px-4 py-2 cursor-pointer text-sm text-gray-700 hover:bg-gray-50"
+                onClick={() => {
+                  onChange(option);
+                  setIsOpen(false);
+                }}
+              >
+                {option}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
 const AdminLogs = () => {
   const [logs, setLogs] = useState([]);
+  const [selectedAction, setSelectedAction] = useState("");
 
   useEffect(() => {
     const fetchActivityLogs = async () => {
@@ -19,12 +75,32 @@ const AdminLogs = () => {
     fetchActivityLogs();
   }, []);
 
+  const actions = ["add_user", "delete_user", "update_user"];
+
   return (
     <div className="max-w-7xl mx-auto">
       {/* Header Section */}
-      <div className="px-6 py-8 mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Activity Logs</h1>
-        <p className="mt-2 text-gray-600">Track all system activities and changes</p>
+      <div className="px-6 py-8">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Activity Logs</h1>
+            <p className="mt-2 text-gray-600">Track all system activities and changes</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <CustomDropdown
+              value={selectedAction}
+              onChange={setSelectedAction}
+              options={actions}
+              label="Actions"
+              icon={
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+              }
+            />
+          </div>
+        </div>
       </div>
 
       <div className="px-6">
@@ -41,7 +117,9 @@ const AdminLogs = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {logs?.map((log) => (
+                {logs
+                  ?.filter(log => selectedAction ? log.action === selectedAction : true)
+                  .map((log) => (
                   <tr key={log.log_id} className="hover:bg-gray-50/50 transition-colors">
                     <td className="px-6 py-4 text-sm text-gray-600">{log.log_id}</td>
                     <td className="px-6 py-4">
