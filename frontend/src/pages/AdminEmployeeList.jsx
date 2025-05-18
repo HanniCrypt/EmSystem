@@ -169,11 +169,65 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, onConfirm, employee }) => {
   );
 };
 
+const UpdateConfirmationDialog = ({ isOpen, onClose, onConfirm, employee }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center">
+      <div 
+        className="absolute inset-0 backdrop-blur-sm bg-gray-900/30 transition-all duration-300"
+        onClick={onClose}
+      />
+      <div className="relative w-96 transform transition-all duration-300 scale-100">
+        <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200/50 p-6 overflow-hidden">
+          <div className="relative">
+            {/* Decorative background elements */}
+            <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-gray-100/50 to-transparent rounded-full -translate-x-16 -translate-y-16" />
+            <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-gray-100/50 to-transparent rounded-full translate-x-16 translate-y-16" />
+            
+            {/* Content */}
+            <div className="relative text-center">
+              <div className="flex justify-center transform hover:scale-105 transition-transform duration-200">
+                <svg className="w-12 h-12 text-blue-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+              </div>
+              <h3 className="text-xl leading-6 font-bold text-gray-900 mb-2">
+                Confirm Update Employee
+              </h3>
+              <div className="mt-2 px-4">
+                <p className="text-sm text-gray-600">
+                  Are you sure you want to update employee "{employee?.username}"?
+                </p>
+              </div>
+              <div className="flex justify-center gap-4 mt-6">
+                <button
+                  onClick={onClose}
+                  className="px-4 py-2 bg-white hover:bg-gray-50 text-gray-800 text-sm font-medium rounded-xl transition-all duration-200 border border-gray-200 hover:border-gray-300 hover:shadow-sm"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={onConfirm}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
+                >
+                  Update Employee
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 function AdminEmployeeList() {
   const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [editModal, setEditModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
+  const [updateModal, setUpdateModal] = useState(false);
   const [employeeToDelete, setEmployeeToDelete] = useState(null);
   const [toast, setToast] = useState({ show: false, message: "", type: "success" });
   const [searchQuery, setSearchQuery] = useState("");
@@ -270,7 +324,10 @@ function AdminEmployeeList() {
 
   const handleEditEmployee = async (e) => {
     e.preventDefault();
+    setUpdateModal(true);
+  };
 
+  const handleConfirmUpdate = async () => {
     try {
       const response = await axios.post(
         `${API_URL}updateEmployee`,
@@ -280,6 +337,7 @@ function AdminEmployeeList() {
           username: selectedEmployee.username,
           newPass: selectedEmployee.password,
           dept_id: selectedEmployee.dept_id,
+          role: selectedEmployee.role,
         },
         { withCredentials: true }
       );
@@ -307,6 +365,7 @@ function AdminEmployeeList() {
         type: "error"
       });
     }
+    setUpdateModal(false);
   };
 
   return (
@@ -327,10 +386,18 @@ function AdminEmployeeList() {
         onConfirm={handleDelete}
         employee={employeeToDelete}
       />
+      <UpdateConfirmationDialog
+        isOpen={updateModal}
+        onClose={() => {
+          setUpdateModal(false);
+        }}
+        onConfirm={handleConfirmUpdate}
+        employee={selectedEmployee}
+      />
       
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">Employee Management</h1>
+          <h1 className="text-3xl font-bold text-gray-800">Employees</h1>
           <div className="flex items-center gap-4">
             {/* Search Bar */}
             <div className="relative">
@@ -493,24 +560,22 @@ function AdminEmployeeList() {
                   </div>
                 </div>
 
-                {/* Role Field (Read-only) */}
+                {/* Role Field */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Role
                   </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value="employee"
-                      disabled
-                      className="w-full px-4 py-2.5 text-sm text-gray-500 border border-gray-200 rounded-xl bg-gray-50 cursor-not-allowed"
-                    />
-                    <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                      <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                      </svg>
-                    </div>
-                  </div>
+                  <select
+                    name="role"
+                    value={selectedEmployee?.role || ""}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2.5 text-sm text-gray-700 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-700 hover:border-gray-300 transition-colors bg-white"
+                  >
+                    <option value="">Select Role</option>
+                    <option value="admin">Admin</option>
+                    <option value="hr">HR</option>
+                    <option value="employee">Employee</option>
+                  </select>
                 </div>
               </div>
 

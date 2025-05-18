@@ -338,6 +338,7 @@ function updateEmployee()
     $base64Avatar = trim($data['avatar']);
     $newPass = trim($data['newPass']);
     $dept_id = isset($data['dept_id']) ? intval($data['dept_id']) : null;
+    $role = isset($data['role']) ? $data['role'] : null;
 
     $user_id = $_SESSION['user_id'];
     $currentUserRole = $_SESSION['role'];
@@ -345,7 +346,39 @@ function updateEmployee()
     $avatar = !empty($base64Avatar) ? base64_decode($base64Avatar) : null;
     $hashedPass = !empty($newPass) ? password_hash($newPass, PASSWORD_DEFAULT) : null;
 
-    if ($avatar && $hashedPass && $dept_id) {
+    if ($avatar && $hashedPass && $dept_id && $role) {
+        $sql = "UPDATE users SET username = ?, avatar = ?, password = ?, dept_id = ?, role = ? WHERE user_id = ?";
+        $stmt = $connect->prepare($sql);
+        $stmt->bind_param("sssisi", $username, $avatar, $hashedPass, $dept_id, $role, $employee_id);
+    } elseif ($avatar && $hashedPass && $role) {
+        $sql = "UPDATE users SET username = ?, avatar = ?, password = ?, role = ? WHERE user_id = ?";
+        $stmt = $connect->prepare($sql);
+        $stmt->bind_param("sssss", $username, $avatar, $hashedPass, $role, $employee_id);
+    } elseif ($avatar && $dept_id && $role) {
+        $sql = "UPDATE users SET username = ?, avatar = ?, dept_id = ?, role = ? WHERE user_id = ?";
+        $stmt = $connect->prepare($sql);
+        $stmt->bind_param("ssisi", $username, $avatar, $dept_id, $role, $employee_id);
+    } elseif ($hashedPass && $dept_id && $role) {
+        $sql = "UPDATE users SET username = ?, password = ?, dept_id = ?, role = ? WHERE user_id = ?";
+        $stmt = $connect->prepare($sql);
+        $stmt->bind_param("ssisi", $username, $hashedPass, $dept_id, $role, $employee_id);
+    } elseif ($avatar && $role) {
+        $sql = "UPDATE users SET username = ?, avatar = ?, role = ? WHERE user_id = ?";
+        $stmt = $connect->prepare($sql);
+        $stmt->bind_param("ssss", $username, $avatar, $role, $employee_id);
+    } elseif ($hashedPass && $role) {
+        $sql = "UPDATE users SET username = ?, password = ?, role = ? WHERE user_id = ?";
+        $stmt = $connect->prepare($sql);
+        $stmt->bind_param("ssss", $username, $hashedPass, $role, $employee_id);
+    } elseif ($dept_id && $role) {
+        $sql = "UPDATE users SET username = ?, dept_id = ?, role = ? WHERE user_id = ?";
+        $stmt = $connect->prepare($sql);
+        $stmt->bind_param("sisi", $username, $dept_id, $role, $employee_id);
+    } elseif ($role) {
+        $sql = "UPDATE users SET username = ?, role = ? WHERE user_id = ?";
+        $stmt = $connect->prepare($sql);
+        $stmt->bind_param("sss", $username, $role, $employee_id);
+    } elseif ($avatar && $hashedPass && $dept_id) {
         $sql = "UPDATE users SET username = ?, avatar = ?, password = ?, dept_id = ? WHERE user_id = ?";
         $stmt = $connect->prepare($sql);
         $stmt->bind_param("sssii", $username, $avatar, $hashedPass, $dept_id, $employee_id);
@@ -390,6 +423,8 @@ function updateEmployee()
             $details .= ", updated avatar";
         if ($hashedPass)
             $details .= ", changed password";
+        if ($role)
+            $details .= ", changed role to '$role'";
 
         $logSql = "INSERT INTO activity_logs (user_id, action, details) VALUES (?, ?, ?)";
         $logStmt = $connect->prepare($logSql);
