@@ -3,14 +3,123 @@ import axios from "axios";
 
 const API_URL = "http://localhost/emsystem/backend/index.php?action=";
 
+const Toast = ({ message, type, onClose }) => {
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose();
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  const icons = {
+    success: (
+      <svg className="w-6 h-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+      </svg>
+    ),
+    error: (
+      <svg className="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    )
+  };
+
+  const colors = {
+    success: "bg-green-50 border-green-200",
+    error: "bg-red-50 border-red-200"
+  };
+
+  return (
+    <div className="fixed top-4 right-4 z-50 animate-fade-in-down">
+      <div className={`rounded-xl shadow-lg ${colors[type]} border backdrop-blur-md p-4 max-w-md`}>
+        <div className="flex items-center gap-3">
+          <div className="flex-shrink-0">
+            {icons[type]}
+          </div>
+          <div className="flex-1 ml-3">
+            <p className={`text-sm font-medium ${type === 'success' ? 'text-green-800' : 'text-red-800'}`}>
+              {message}
+            </p>
+          </div>
+          <div className="flex-shrink-0">
+            <button
+              onClick={onClose}
+              className={`inline-flex rounded-md p-1.5 focus:outline-none transition-colors
+                ${type === 'success' ? 'text-green-500 hover:bg-green-100' : 'text-red-500 hover:bg-red-100'}`}
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ConfirmationDialog = ({ isOpen, onClose, onConfirm }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div 
+        className="absolute inset-0 backdrop-blur-sm bg-gray-900/30 transition-all duration-300"
+        onClick={onClose}
+      />
+      <div className="relative w-96 transform transition-all duration-300 scale-100">
+        <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200/50 p-6 overflow-hidden">
+          <div className="relative">
+            {/* Decorative background elements */}
+            <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-gray-100/50 to-transparent rounded-full -translate-x-16 -translate-y-16" />
+            <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-gray-100/50 to-transparent rounded-full translate-x-16 translate-y-16" />
+            
+            {/* Content */}
+            <div className="relative text-center">
+              <div className="flex justify-center transform hover:scale-105 transition-transform duration-200">
+                <svg className="w-12 h-12 text-green-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              <h3 className="text-xl leading-6 font-bold text-gray-900 mb-2">
+                Confirm New Employee
+              </h3>
+              <div className="mt-2 px-4">
+                <p className="text-sm text-gray-600">
+                  Are you sure you want to add a new employee?
+                </p>
+              </div>
+              <div className="flex justify-center gap-4 mt-6">
+                <button
+                  onClick={onClose}
+                  className="px-4 py-2 bg-white hover:bg-gray-50 text-gray-800 text-sm font-medium rounded-xl transition-all duration-200 border border-gray-200 hover:border-gray-300 hover:shadow-sm"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={onConfirm}
+                  className="px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const HRAddEmployee = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [avatar, setAvatar] = useState(null);
-  const [status, setStatus] = useState(null);
-
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const [department, setDepartment] = useState("");
   const [departments, setDepartments] = useState([]);
+  const [toast, setToast] = useState({ show: false, message: "", type: "success" });
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -27,7 +136,10 @@ const HRAddEmployee = () => {
 
   const handleAddEmployee = async (e) => {
     e.preventDefault();
+    setShowConfirmation(true);
+  };
 
+  const handleConfirm = async () => {
     try {
       const response = await axios.post(
         `${API_URL}addNewUser`,
@@ -43,17 +155,43 @@ const HRAddEmployee = () => {
         }
       );
 
-      if (response.data.type === "success") {
+      // Extract JSON from the response that might contain HTML notices
+      let jsonData;
+      if (typeof response.data === 'string') {
+        const jsonStart = response.data.indexOf('{');
+        const jsonEnd = response.data.lastIndexOf('}') + 1;
+        const jsonStr = response.data.substring(jsonStart, jsonEnd);
+        jsonData = JSON.parse(jsonStr);
+      } else {
+        jsonData = response.data;
+      }
+
+      if (jsonData.type === "success") {
         setUsername("");
         setAvatar("");
         setPassword("");
         setDepartment("");
-        setStatus(true);
+        setToast({
+          show: true,
+          message: `Successfully added new employee "${username}"`,
+          type: "success"
+        });
+      } else {
+        setToast({
+          show: true,
+          message: jsonData.message || "Failed to add employee",
+          type: "error"
+        });
       }
     } catch (error) {
       console.error(error);
-      setStatus(false);
+      setToast({
+        show: true,
+        message: "An error occurred while adding the employee",
+        type: "error"
+      });
     }
+    setShowConfirmation(false);
   };
 
   const handleFileChange = (e) => {
@@ -69,30 +207,19 @@ const HRAddEmployee = () => {
 
   return (
     <div className="max-w-2xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+      {toast.show && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast({ ...toast, show: false })}
+        />
+      )}
+      <ConfirmationDialog
+        isOpen={showConfirmation}
+        onClose={() => setShowConfirmation(false)}
+        onConfirm={handleConfirm}
+      />
       <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
-        {status !== null && (
-          <div
-            className={`p-5 mb-8 rounded-xl shadow-lg border-2 transform hover:scale-[1.01] transition-all duration-300 ${
-              status ? "bg-green-50 border-green-300 text-green-800" : "bg-red-50 border-red-300 text-red-800"
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              {status ? (
-                <svg className="w-6 h-6 text-green-500" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-              ) : (
-                <svg className="w-6 h-6 text-red-500" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-              )}
-              <span className="text-base font-medium">
-                {status ? "Employee added successfully!" : "Failed to add employee"}
-              </span>
-            </div>
-          </div>
-        )}
-
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-900 tracking-tight">
             Add New Employee

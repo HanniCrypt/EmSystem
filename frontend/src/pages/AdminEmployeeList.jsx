@@ -60,10 +60,122 @@ const CustomDropdown = ({ value, onChange, departments }) => {
   );
 };
 
+const Toast = ({ message, type, onClose }) => {
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose();
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  const icons = {
+    success: (
+      <svg className="w-6 h-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+      </svg>
+    ),
+    error: (
+      <svg className="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    )
+  };
+
+  const colors = {
+    success: "bg-green-50 border-green-200",
+    error: "bg-red-50 border-red-200"
+  };
+
+  return (
+    <div className="fixed top-4 right-4 z-50 animate-fade-in-down">
+      <div className={`rounded-xl shadow-lg ${colors[type]} border backdrop-blur-md p-4 max-w-md`}>
+        <div className="flex items-center gap-3">
+          <div className="flex-shrink-0">
+            {icons[type]}
+          </div>
+          <div className="flex-1 ml-3">
+            <p className={`text-sm font-medium ${type === 'success' ? 'text-green-800' : 'text-red-800'}`}>
+              {message}
+            </p>
+          </div>
+          <div className="flex-shrink-0">
+            <button
+              onClick={onClose}
+              className={`inline-flex rounded-md p-1.5 focus:outline-none transition-colors
+                ${type === 'success' ? 'text-green-500 hover:bg-green-100' : 'text-red-500 hover:bg-red-100'}`}
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const DeleteConfirmationDialog = ({ isOpen, onClose, onConfirm, employee }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div 
+        className="absolute inset-0 backdrop-blur-sm bg-gray-900/30 transition-all duration-300"
+        onClick={onClose}
+      />
+      <div className="relative w-96 transform transition-all duration-300 scale-100">
+        <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200/50 p-6 overflow-hidden">
+          <div className="relative">
+            {/* Decorative background elements */}
+            <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-gray-100/50 to-transparent rounded-full -translate-x-16 -translate-y-16" />
+            <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-gray-100/50 to-transparent rounded-full translate-x-16 translate-y-16" />
+            
+            {/* Content */}
+            <div className="relative text-center">
+              <div className="flex justify-center transform hover:scale-105 transition-transform duration-200">
+                <svg className="w-12 h-12 text-red-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </div>
+              <h3 className="text-xl leading-6 font-bold text-gray-900 mb-2">
+                Confirm Delete Employee
+              </h3>
+              <div className="mt-2 px-4">
+                <p className="text-sm text-gray-600">
+                  Are you sure you want to delete employee "{employee?.username}"? This action cannot be undone.
+                </p>
+              </div>
+              <div className="flex justify-center gap-4 mt-6">
+                <button
+                  onClick={onClose}
+                  className="px-4 py-2 bg-white hover:bg-gray-50 text-gray-800 text-sm font-medium rounded-xl transition-all duration-200 border border-gray-200 hover:border-gray-300 hover:shadow-sm"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={onConfirm}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
+                >
+                  Delete Employee
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 function AdminEmployeeList() {
   const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [editModal, setEditModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [employeeToDelete, setEmployeeToDelete] = useState(null);
+  const [toast, setToast] = useState({ show: false, message: "", type: "success" });
   const [searchQuery, setSearchQuery] = useState("");
   const [departments, setDepartments] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState("");
@@ -88,29 +200,45 @@ function AdminEmployeeList() {
     fetchDepartments();
   }, []);
 
-  const handleDelete = async (user_id) => {
-    if (window.confirm("Are you sure you want to delete this employee?")) {
-      try {
-        const response = await axios.post(
-          `${API_URL}removeEmployee`,
-          {
-            user_id: user_id,
-          },
-          { withCredentials: true }
-        );
+  const handleDeleteClick = (employee) => {
+    setEmployeeToDelete(employee);
+    setDeleteModal(true);
+  };
 
-        if (response.data.type === "success") {
-          alert(response.data.message);
-          fetchAllEmployees();
-        } else {
-          alert(response.data.message);
-          fetchAllEmployees();
-        }
-      } catch (error) {
-        console.error("Error deleting employee:", error);
-        alert("Failed to delete employee");
+  const handleDelete = async () => {
+    try {
+      const response = await axios.post(
+        `${API_URL}removeEmployee`,
+        {
+          user_id: employeeToDelete.user_id,
+        },
+        { withCredentials: true }
+      );
+
+      if (response.data.type === "success") {
+        setToast({
+          show: true,
+          message: `Successfully removed employee "${employeeToDelete.username}"`,
+          type: "success"
+        });
+        fetchAllEmployees();
+      } else {
+        setToast({
+          show: true,
+          message: response.data.message || "Failed to remove employee",
+          type: "error"
+        });
       }
+    } catch (error) {
+      console.error("Error deleting employee:", error);
+      setToast({
+        show: true,
+        message: "An error occurred while removing the employee",
+        type: "error"
+      });
     }
+    setDeleteModal(false);
+    setEmployeeToDelete(null);
   };
 
   const handleEditModal = async (employee) => {
@@ -161,6 +289,23 @@ function AdminEmployeeList() {
 
   return (
     <div className="max-w-7xl mx-auto">
+      {toast.show && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast({ ...toast, show: false })}
+        />
+      )}
+      <DeleteConfirmationDialog
+        isOpen={deleteModal}
+        onClose={() => {
+          setDeleteModal(false);
+          setEmployeeToDelete(null);
+        }}
+        onConfirm={handleDelete}
+        employee={employeeToDelete}
+      />
+      
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-800">Employee Management</h1>
@@ -253,7 +398,7 @@ function AdminEmployeeList() {
                           </button>
                           <button
                             className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
-                            onClick={() => handleDelete(employee.user_id)}
+                            onClick={() => handleDeleteClick(employee)}
                           >
                             Delete
                           </button>
