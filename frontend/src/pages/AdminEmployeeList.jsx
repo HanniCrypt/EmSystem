@@ -426,78 +426,96 @@ function AdminEmployeeList() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-md overflow-hidden mt-6">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-gray-50 border-b border-gray-100">
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">Avatar</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">ID</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">Username</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">Department</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">Created At</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {employees
-                  ?.filter(
-                    (user) =>
-                      (selectedDepartment
-                        ? user.dept_name === selectedDepartment
-                        : true) &&
-                      (searchQuery
-                        ? user.username.toLowerCase().includes(searchQuery.toLowerCase())
-                        : true)
-                  )
-                  .map((employee) => (
-                    <tr key={employee.user_id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex justify-center">
-                          {employee.avatar ? (
-                            <img
-                              src={`data:image/jpeg;base64,${employee.avatar}`}
-                              alt="Profile"
-                              className="w-12 h-12 rounded-full object-cover border-2 border-gray-100"
-                            />
-                          ) : (
-                            <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-medium">
-                              NA
-                            </div>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">{employee.user_id}</td>
-                      <td className="px-6 py-4 text-sm font-medium text-gray-700">{employee.username}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
-                        <span className="px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 font-medium">
-                          {employee?.dept_name}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">{employee.created_at}</td>
-                      <td className="px-6 py-4">
-                        <div className="flex gap-2">
-                          <button
-                            className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
-                            onClick={() =>
-                              handleEditModal({ ...employee, password: "" })
-                            }
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
-                            onClick={() => handleDeleteClick(employee)}
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {employees
+            ?.filter(
+              (user) =>
+                (selectedDepartment
+                  ? user.dept_name === selectedDepartment
+                  : true) &&
+                (searchQuery
+                  ? user.username.toLowerCase().includes(searchQuery.toLowerCase())
+                  : true)
+            )
+            .map((employee) => (
+              <div 
+                key={employee.user_id} 
+                className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200 p-6"
+              >
+                {/* Avatar Section - Centered */}
+                <div className="flex justify-center mb-6">
+                  {employee.avatar ? (
+                    <img
+                      src={`data:image/jpeg;base64,${employee.avatar}`}
+                      alt="Profile"
+                      className="w-54 h-40 rounded-2xl object-cover shadow-md border-2 border-gray-50"
+                    />
+                  ) : (
+                    <div className="w-48 h-40 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center text-4xl font-bold text-gray-400 shadow-md border-2 border-gray-50">
+                      {employee.username?.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                </div>
+
+                {/* Info Section */}
+                <div className="space-y-3">
+                  {/* Username and Actions Row */}
+                  <div className="flex items-center justify-between px-2">
+                  <h3 className="text-xl font-semibold text-gray-900">
+                      {employee.username}
+                    </h3>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEditModal({ ...employee, password: "" })}
+                        className="p-2 text-gray-900 hover:bg-gray-50 rounded-xl transition-colors"
+                        title="Edit Employee"
+                      >
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={() => handleDeleteClick(employee)}
+                        className="p-2 text-gray-900 hover:bg-gray-50 rounded-xl transition-colors"
+                        title="Delete Employee"
+                      >
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* ID */}
+                  <div className="px-2 text-sm text-gray-900 font-medium">
+                    ID: {employee.user_id}
+                  </div>
+
+                  {/* Role */}
+                  <div className="px-2">
+                    <div className="inline-flex items-center text-sm font-medium text-emerald-600">
+                      {employee.role}
+                    </div>
+                  </div>
+
+                  {/* Department */}
+                  <div className="px-2 mt-[-10px]">
+                    <div className="inline-flex items-center text-sm font-medium text-purple-700">
+                      {employee?.dept_name || "No Department"}
+                    </div>
+                  </div>
+
+                  {/* Date */}
+                  <div className="px-2 text-xs text-gray-900">
+                    Joined {new Date(employee.created_at).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </div>
+                </div>
+              </div>
+            ))}
         </div>
       </div>
 
