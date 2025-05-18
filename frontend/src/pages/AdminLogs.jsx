@@ -9,7 +9,7 @@ const CustomDropdown = ({ value, onChange, options, label, icon }) => {
   return (
     <div className="relative">
       <div 
-        className="bg-white rounded-xl shadow-sm p-2 flex items-center gap-3 border border-gray-100 cursor-pointer"
+        className="bg-white rounded-xl shadow-sm p-2 flex items-center gap-3 border border-gray-200 hover:border-gray-900 transition-all duration-200 cursor-pointer"
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="px-3 py-2 bg-gray-50 rounded-lg">
@@ -58,15 +58,108 @@ const CustomDropdown = ({ value, onChange, options, label, icon }) => {
   );
 };
 
+const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+  
+  return (
+    <div className="flex items-center justify-between px-6 py-4 bg-white border-t border-gray-100">
+      <div className="flex justify-between flex-1 sm:hidden">
+        <button
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className={`relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200
+            ${currentPage === 1 
+              ? 'text-gray-300 bg-gray-50 cursor-not-allowed' 
+              : 'text-white bg-gray-900 hover:bg-gray-800 shadow-sm hover:shadow-md'
+            }`}
+        >
+          Previous
+        </button>
+        <button
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className={`relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200
+            ${currentPage === totalPages 
+              ? 'text-gray-300 bg-gray-50 cursor-not-allowed' 
+              : 'text-white bg-gray-900 hover:bg-gray-800 shadow-sm hover:shadow-md'
+            }`}
+        >
+          Next
+        </button>
+      </div>
+      <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+        <div>
+          <p className="text-sm text-gray-700">
+            Showing page <span className="font-medium">{currentPage}</span> of{' '}
+            <span className="font-medium">{totalPages}</span>
+          </p>
+        </div>
+        <div>
+          <nav className="inline-flex gap-2" aria-label="Pagination">
+            <button
+              onClick={() => onPageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className={`relative inline-flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200
+                ${currentPage === 1 
+                  ? 'text-gray-300 bg-gray-50 cursor-not-allowed' 
+                  : 'text-white bg-gray-900 hover:bg-gray-800 shadow-sm hover:shadow-md'
+                }`}
+            >
+              <span className="sr-only">Previous</span>
+              <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+            </button>
+            
+            {pages.map((page) => (
+              <button
+                key={page}
+                onClick={() => onPageChange(page)}
+                className={`relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200
+                  ${currentPage === page
+                    ? 'z-10 bg-gray-900 text-white shadow-md'
+                    : 'text-gray-700 bg-white hover:bg-gray-50 border border-gray-200 hover:border-gray-900'
+                  }`}
+              >
+                {page}
+              </button>
+            ))}
+
+            <button
+              onClick={() => onPageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className={`relative inline-flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200
+                ${currentPage === totalPages 
+                  ? 'text-gray-300 bg-gray-50 cursor-not-allowed' 
+                  : 'text-white bg-gray-900 hover:bg-gray-800 shadow-sm hover:shadow-md'
+                }`}
+            >
+              <span className="sr-only">Next</span>
+              <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </nav>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const AdminLogs = () => {
   const [logs, setLogs] = useState([]);
   const [selectedAction, setSelectedAction] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const logsPerPage = 10;
 
   useEffect(() => {
     const fetchActivityLogs = async () => {
       try {
         const res = await axios.get(`${API_URL}fetchActivityLogs`);
-        setLogs(res.data);
+        const sortedLogs = res.data.sort((a, b) => 
+          new Date(b.created_at) - new Date(a.created_at)
+        );
+        setLogs(sortedLogs);
       } catch (error) {
         console.log(error);
       }
@@ -77,19 +170,31 @@ const AdminLogs = () => {
 
   const actions = ["add_user", "delete_user", "update_user"];
 
+  const filteredLogs = logs?.filter(log => selectedAction ? log.action === selectedAction : true);
+  const totalPages = Math.ceil(filteredLogs.length / logsPerPage);
+  const indexOfLastLog = currentPage * logsPerPage;
+  const indexOfFirstLog = indexOfLastLog - logsPerPage;
+  const currentLogs = filteredLogs.slice(indexOfFirstLog, indexOfLastLog);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
     <div className="max-w-7xl mx-auto">
-      {/* Header Section */}
       <div className="px-6 py-8">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Activity Logs</h1>
+            <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Activity Logs</h1>
             <p className="mt-2 text-gray-600">Track all system activities and changes</p>
           </div>
           <div className="flex items-center gap-4">
             <CustomDropdown
               value={selectedAction}
-              onChange={setSelectedAction}
+              onChange={(value) => {
+                setSelectedAction(value);
+                setCurrentPage(1);
+              }}
               options={actions}
               label="Actions"
               icon={
@@ -101,56 +206,54 @@ const AdminLogs = () => {
             />
           </div>
         </div>
-      </div>
 
-      <div className="px-6">
-        <div className="bg-white rounded-2xl shadow-md overflow-hidden mb-8">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full whitespace-nowrap">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-100">
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">Log ID</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">User ID</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">Action</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">Details</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">Created At</th>
+                <tr className="bg-gray-50/80 backdrop-blur-sm sticky top-0">
+                  <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Log ID</th>
+                  <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">User ID</th>
+                  <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Action</th>
+                  <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Details</th>
+                  <th className="px-6 py-5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Created At</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
-                {logs
-                  ?.filter(log => selectedAction ? log.action === selectedAction : true)
-                  .map((log) => (
-                  <tr key={log.log_id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-6 py-4 text-sm text-gray-600">{log.log_id}</td>
+              <tbody className="divide-y divide-gray-100 bg-white">
+                {currentLogs.map((log) => (
+                  <tr key={log.log_id} className="hover:bg-gray-50/80 transition-colors duration-200">
                     <td className="px-6 py-4">
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700">
+                      <span className="text-sm font-medium text-gray-900">#{log.log_id}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="inline-flex items-center px-2.5 py-1.5 rounded-xl text-xs font-medium bg-gray-900 text-white shadow-sm">
                         {log.user_id}
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
+                      <span className={`inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-medium shadow-sm ${
                         log.action.toLowerCase().includes('delete') 
-                          ? 'bg-red-50 text-red-700'
+                          ? 'bg-red-50 text-red-800 border border-red-100'
                           : log.action.toLowerCase().includes('add') || log.action.toLowerCase().includes('create')
-                          ? 'bg-green-50 text-green-700'
+                          ? 'bg-green-50 text-green-800 border border-green-100'
                           : log.action.toLowerCase().includes('update') || log.action.toLowerCase().includes('edit')
-                          ? 'bg-blue-50 text-blue-700'
-                          : 'bg-gray-50 text-gray-700'
+                          ? 'bg-blue-50 text-blue-800 border border-blue-100'
+                          : 'bg-gray-50 text-gray-800 border border-gray-100'
                       }`}>
                         {log.action}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600 max-w-md">
-                      <div className="truncate">
+                    <td className="px-6 py-4">
+                      <div className="text-sm text-gray-700 max-w-md truncate hover:whitespace-normal hover:text-clip hover:overflow-visible">
                         {log.details}
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="inline-flex items-center text-xs text-gray-500">
-                        <svg className="w-4 h-4 mr-1.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <span className="inline-flex items-center text-xs text-gray-500 gap-1.5">
+                        <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        {log.created_at}
+                        <span className="font-medium">{log.created_at}</span>
                       </span>
                     </td>
                   </tr>
@@ -158,6 +261,14 @@ const AdminLogs = () => {
               </tbody>
             </table>
           </div>
+          
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          )}
         </div>
       </div>
     </div>
