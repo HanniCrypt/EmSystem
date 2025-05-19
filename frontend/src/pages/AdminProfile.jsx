@@ -74,6 +74,7 @@ function AdminProfile() {
           newPass: formData.newPassword,
           avatar: user.avatar,
           dept_id: formData.dept_id,
+          role: formData.role,
         },
         {
           withCredentials: true,
@@ -85,6 +86,7 @@ function AdminProfile() {
           ...prev,
           username: formData.username,
           dept_id: formData.dept_id,
+          role: formData.role,
         }));
         setShowModal(false);
       }
@@ -208,24 +210,22 @@ function AdminProfile() {
                   </div>
                 </div>
 
-                {/* Role Field (Read-only) */}
+                {/* Role Field */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Role
                   </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={formData.role}
-                      disabled
-                      className="w-full px-4 py-2.5 text-sm text-gray-500 border border-gray-200 rounded-xl bg-gray-50 cursor-not-allowed"
-                    />
-                    <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                      <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                      </svg>
-                    </div>
-                  </div>
+                  <select
+                    name="role"
+                    value={formData.role}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2.5 text-sm text-gray-700 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-700 hover:border-gray-300 transition-colors bg-white"
+                  >
+                    <option value="">Select Role</option>
+                    <option value="admin">Admin</option>
+                    <option value="hr">HR</option>
+                    <option value="employee">Employee</option>
+                  </select>
                 </div>
               </div>
 
