@@ -397,7 +397,7 @@ function AdminEmployeeList() {
       
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">Employees</h1>
+          <h1 className="text-3xl font-bold text-gray-800">Employee List</h1>
           <div className="flex items-center gap-4">
             {/* Search Bar */}
             <div className="relative">
@@ -426,257 +426,277 @@ function AdminEmployeeList() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {employees
-            ?.filter(
-              (user) =>
-                (selectedDepartment
-                  ? user.dept_name === selectedDepartment
-                  : true) &&
-                (searchQuery
-                  ? user.username.toLowerCase().includes(searchQuery.toLowerCase())
-                  : true)
-            )
-            .map((employee) => (
-              <div 
-                key={employee.user_id} 
-                className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200 p-6"
-              >
-                {/* Avatar Section - Centered */}
-                <div className="flex justify-center mb-6">
-                  {employee.avatar ? (
-                    <img
-                      src={`data:image/jpeg;base64,${employee.avatar}`}
-                      alt="Profile"
-                      className="w-54 h-40 rounded-2xl object-cover shadow-md border-2 border-gray-50"
-                    />
-                  ) : (
-                    <div className="w-48 h-40 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center text-4xl font-bold text-gray-400 shadow-md border-2 border-gray-50">
-                      {employee.username?.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                </div>
-
-                {/* Info Section */}
-                <div className="space-y-3">
-                  {/* Username and Actions Row */}
-                  <div className="flex items-center justify-between px-2">
-                  <h3 className="text-xl font-semibold text-gray-900">
-                      {employee.username}
-                    </h3>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleEditModal({ ...employee, password: "" })}
-                        className="p-2 text-gray-900 hover:bg-gray-50 rounded-xl transition-colors"
-                        title="Edit Employee"
-                      >
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                        </svg>
-                      </button>
-                      <button
-                        onClick={() => handleDeleteClick(employee)}
-                        className="p-2 text-gray-900 hover:bg-gray-50 rounded-xl transition-colors"
-                        title="Delete Employee"
-                      >
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* ID */}
-                  <div className="px-2 text-sm text-gray-900 font-medium">
-                    ID: {employee.user_id}
-                  </div>
-
-                  {/* Role */}
-                  <div className="px-2">
-                    <div className="inline-flex items-center text-sm font-medium text-emerald-600">
-                      {employee.role}
-                    </div>
-                  </div>
-
-                  {/* Department */}
-                  <div className="px-2 mt-[-10px]">
-                    <div className="inline-flex items-center text-sm font-medium text-purple-700">
-                      {employee?.dept_name || "No Department"}
-                    </div>
-                  </div>
-
-                  {/* Date */}
-                  <div className="px-2 text-xs text-gray-900">
-                    Joined {new Date(employee.created_at).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
-                  </div>
-                </div>
-              </div>
-            ))}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
+                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">Avatar</th>
+                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">Username</th>
+                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">ID</th>
+                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">Role</th>
+                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">Department</th>
+                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">Joined Date</th>
+                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {employees
+                  ?.filter(
+                    (user) =>
+                      (selectedDepartment
+                        ? user.dept_name === selectedDepartment
+                        : true) &&
+                      (searchQuery
+                        ? user.username.toLowerCase().includes(searchQuery.toLowerCase())
+                        : true)
+                  )
+                  .map((employee, index) => (
+                    <tr 
+                      key={employee.user_id}
+                      className={`hover:bg-blue-50/50 transition-colors duration-200 ${
+                        index % 2 === 0 ? 'bg-gray-50/50' : 'bg-white'
+                      }`}
+                    >
+                      <td className="px-6 py-5 whitespace-nowrap">
+                        <div className="flex justify-center">
+                          {employee.avatar ? (
+                            <div className="relative group">
+                              <img
+                                src={`data:image/jpeg;base64,${employee.avatar}`}
+                                alt="Profile"
+                                className="w-16 h-16 rounded-xl object-cover shadow-md border-2 border-gray-100 group-hover:border-blue-200 transition-all duration-200 transform group-hover:scale-105"
+                              />
+                              <div className="hidden group-hover:block absolute top-0 left-0 w-16 h-16 rounded-xl bg-black/20 transition-all duration-200" />
+                            </div>
+                          ) : (
+                            <div className="relative group">
+                              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center text-3xl font-bold text-blue-600 shadow-md border-2 border-gray-100 group-hover:border-blue-200 transition-all duration-200 transform group-hover:scale-105">
+                                {employee.username?.charAt(0).toUpperCase()}
+                              </div>
+                              <div className="hidden group-hover:block absolute top-0 left-0 w-16 h-16 rounded-xl bg-black/10 transition-all duration-200" />
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-5 whitespace-nowrap">
+                        <div className="text-base font-bold text-gray-900 text-center">{employee.username}</div>
+                      </td>
+                      <td className="px-6 py-5 whitespace-nowrap">
+                        <div className="text-base text-gray-600 text-center font-mono font-medium">{employee.user_id}</div>
+                      </td>
+                      <td className="px-6 py-5 whitespace-nowrap">
+                        <div className="flex justify-center">
+                          <span className={`
+                            inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold
+                            ${employee.role === 'admin' ? 'bg-purple-100 text-purple-700' :
+                              employee.role === 'hr' ? 'bg-blue-100 text-blue-700' :
+                              'bg-emerald-100 text-emerald-700'}
+                          `}>
+                            {employee.role.charAt(0).toUpperCase() + employee.role.slice(1)}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-5 whitespace-nowrap">
+                        <div className="flex justify-center">
+                          <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold bg-gray-100 text-gray-700">
+                            {employee?.dept_name || "No Department"}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-5 whitespace-nowrap">
+                        <div className="text-base text-gray-600 text-center font-medium">
+                          {new Date(employee.created_at).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </div>
+                      </td>
+                      <td className="px-6 py-5 whitespace-nowrap">
+                        <div className="flex justify-center gap-3">
+                          <button
+                            onClick={() => handleEditModal({ ...employee, password: "" })}
+                            className="p-2.5 text-blue-600 hover:bg-blue-100 rounded-lg transition-all duration-200 hover:scale-110"
+                            title="Edit Employee"
+                          >
+                            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(employee)}
+                            className="p-2.5 text-red-600 hover:bg-red-100 rounded-lg transition-all duration-200 hover:scale-110"
+                            title="Delete Employee"
+                          >
+                            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
       {/* Modal */}
-      <div
-        className={`fixed inset-0 z-50 flex items-center justify-center ${
-          editModal ? "" : "hidden"
-        }`}
-        aria-modal="true"
-        role="dialog"
-      >
-        <div
-          className="fixed inset-0 bg-black/30 backdrop-blur-sm transition-opacity"
-          onClick={() => setEditModal(false)}
-          aria-hidden="true"
-        />
-        <div className="relative z-50 w-full max-w-2xl rounded-2xl bg-white p-8 shadow-xl">
-          <div className="flex justify-between items-center mb-8">
-            <h3 className="text-2xl font-semibold text-gray-800">Edit Employee</h3>
-            <button
-              onClick={() => setEditModal(false)}
-              className="p-2 text-gray-400 hover:text-gray-500 rounded-full hover:bg-gray-100 transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-
-          <form onSubmit={(e) => handleEditEmployee(e)} className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Left Column - Avatar and Role */}
-              <div className="space-y-6">
-                <div>
-                  <div className="flex flex-col items-center space-y-4">
-                    <div className="w-40 h-40 rounded-2xl bg-gray-50 ring-4 ring-gray-100 flex items-center justify-center overflow-hidden">
-                      {selectedEmployee?.avatar ? (
-                        <img
-                          src={`data:image/jpeg;base64,${selectedEmployee?.avatar}`}
-                          alt="Avatar"
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <span className="text-6xl font-bold text-gray-300">
-                          {selectedEmployee?.username?.charAt(0).toUpperCase()}
-                        </span>
-                      )}
-                    </div>
-                    <div className="w-full">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Change Avatar
-                      </label>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        className="w-full px-4 py-2.5 text-sm text-gray-700 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Role Field */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Role
-                  </label>
-                  <select
-                    name="role"
-                    value={selectedEmployee?.role || ""}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2.5 text-sm text-gray-700 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-700 hover:border-gray-300 transition-colors bg-white"
-                  >
-                    <option value="">Select Role</option>
-                    <option value="admin">Admin</option>
-                    <option value="hr">HR</option>
-                    <option value="employee">Employee</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Right Column - Other Fields */}
-              <div className="space-y-6">
-                {/* Username Field */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Username
-                  </label>
-                  <input
-                    type="text"
-                    name="username"
-                    value={selectedEmployee?.username}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2.5 text-sm text-gray-700 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-700 hover:border-gray-300 transition-colors"
-                  />
-                </div>
-
-                {/* Password Field */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    New Password
-                  </label>
-                  <input
-                    type="password"
-                    name="password"
-                    value={selectedEmployee?.password}
-                    onChange={handleChange}
-                    placeholder="Leave blank to keep current password"
-                    className="w-full px-4 py-2.5 text-sm text-gray-700 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-700 hover:border-gray-300 transition-colors"
-                  />
-                </div>
-
-                {/* Department Field */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Department
-                  </label>
-                  <select
-                    name="dept_id"
-                    value={selectedEmployee?.dept_id || ""}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2.5 text-sm text-gray-700 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-700 hover:border-gray-300 transition-colors bg-white"
-                  >
-                    <option value="">Select Department</option>
-                    {departments.map((dept) => (
-                      <option key={dept.dept_id} value={dept.dept_id}>
-                        {dept.dept_name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Current Department Display */}
-                <div className="bg-gray-50 rounded-xl p-4">
-                  <div className="text-sm text-gray-600">Current Department</div>
-                  <div className="font-medium text-gray-900">
-                    {selectedEmployee?.dept_name || "Not Assigned"}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex justify-end gap-3 pt-8 mt-4 border-t border-gray-100">
+      {editModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="fixed inset-0 bg-black/30 backdrop-blur-sm transition-opacity"
+            onClick={() => setEditModal(false)}
+            aria-hidden="true"
+          />
+          <div className="relative z-50 w-full max-w-2xl rounded-2xl bg-white p-8 shadow-xl">
+            <div className="flex justify-between items-center mb-8">
+              <h3 className="text-2xl font-semibold text-gray-800">Edit Employee</h3>
               <button
-                type="button"
                 onClick={() => setEditModal(false)}
-                className="px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
+                className="p-2 text-gray-400 hover:text-gray-500 rounded-full hover:bg-gray-100 transition-colors"
               >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-6 py-2.5 text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 rounded-xl transition-colors shadow-sm hover:shadow-md"
-              >
-                Save Changes
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
             </div>
-          </form>
+
+            <form onSubmit={(e) => handleEditEmployee(e)} className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Left Column - Avatar and Role */}
+                <div className="space-y-6">
+                  <div>
+                    <div className="flex flex-col items-center space-y-4">
+                      <div className="w-40 h-40 rounded-2xl bg-gray-50 ring-4 ring-gray-100 flex items-center justify-center overflow-hidden">
+                        {selectedEmployee?.avatar ? (
+                          <img
+                            src={`data:image/jpeg;base64,${selectedEmployee?.avatar}`}
+                            alt="Avatar"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-6xl font-bold text-gray-300">
+                            {selectedEmployee?.username?.charAt(0).toUpperCase()}
+                          </span>
+                        )}
+                      </div>
+                      <div className="w-full">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Change Avatar
+                        </label>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleFileChange}
+                          className="w-full px-4 py-2.5 text-sm text-gray-700 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Role Field */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Role
+                    </label>
+                    <select
+                      name="role"
+                      value={selectedEmployee?.role || ""}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2.5 text-sm text-gray-700 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-700 hover:border-gray-300 transition-colors bg-white"
+                    >
+                      <option value="">Select Role</option>
+                      <option value="admin">Admin</option>
+                      <option value="hr">HR</option>
+                      <option value="employee">Employee</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Right Column - Other Fields */}
+                <div className="space-y-6">
+                  {/* Username Field */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Username
+                    </label>
+                    <input
+                      type="text"
+                      name="username"
+                      value={selectedEmployee?.username}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2.5 text-sm text-gray-700 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-700 hover:border-gray-300 transition-colors"
+                    />
+                  </div>
+
+                  {/* Password Field */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      New Password
+                    </label>
+                    <input
+                      type="password"
+                      name="password"
+                      value={selectedEmployee?.password}
+                      onChange={handleChange}
+                      placeholder="Leave blank to keep current password"
+                      className="w-full px-4 py-2.5 text-sm text-gray-700 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-700 hover:border-gray-300 transition-colors"
+                    />
+                  </div>
+
+                  {/* Department Field */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Department
+                    </label>
+                    <select
+                      name="dept_id"
+                      value={selectedEmployee?.dept_id || ""}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2.5 text-sm text-gray-700 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-700 hover:border-gray-300 transition-colors bg-white"
+                    >
+                      <option value="">Select Department</option>
+                      {departments.map((dept) => (
+                        <option key={dept.dept_id} value={dept.dept_id}>
+                          {dept.dept_name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Current Department Display */}
+                  <div className="bg-gray-50 rounded-xl p-4">
+                    <div className="text-sm text-gray-600">Current Department</div>
+                    <div className="font-medium text-gray-900">
+                      {selectedEmployee?.dept_name || "Not Assigned"}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex justify-end gap-3 pt-8 mt-4 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => setEditModal(false)}
+                  className="px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2.5 text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 rounded-xl transition-colors shadow-sm hover:shadow-md"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

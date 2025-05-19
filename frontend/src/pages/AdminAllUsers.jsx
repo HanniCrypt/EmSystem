@@ -454,103 +454,131 @@ function AdminAllUsersList() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          {users
-            ?.filter(
-              (user) =>
-                (selectedDepartment
-                  ? user.dept_name === selectedDepartment
-                  : true) &&
-                (selectedRole ? user.role === selectedRole : true) &&
-                (searchQuery
-                  ? user.username.toLowerCase().includes(searchQuery.toLowerCase())
-                  : true)
-            )
-            .map((user) => (
-              <div 
-                key={user.user_id} 
-                className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200 p-4"
-              >
-                {/* Avatar Section - Centered */}
-                <div className="flex justify-center mb-5">
-                  {user.avatar ? (
-                    <img
-                      src={`data:image/jpeg;base64,${user.avatar}`}
-                      alt="Profile"
-                      className="w-45 h-35 rounded-2xl object-cover shadow-md border-2 border-gray-50"
-                    />
-                  ) : (
-                    <div className="w-36 h-32 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center text-4xl font-bold text-gray-400 shadow-md border-2 border-gray-50">
-                      {user.username?.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                </div>
-
-                {/* Info Section */}
-                <div className="space-y-2.5">
-                  {/* Username and Actions Row */}
-                  <div className="flex items-center justify-between px-2">
-                    <h3 className="text-xl font-semibold text-gray-900">
-                      {user.username}
-                    </h3>
-                    <div className="flex gap-1 mr-[10px]">
-                      {user.user_id === currentUser.user_id ? (
-                        <span className="text-sm font-medium text-gray-900">You</span>
-                      ) : (
-                        <>
-                          <button
-                            onClick={() => handleEditModal({ ...user, password: "" })}
-                            className="p-1.5 text-gray-900 hover:bg-gray-50 rounded-xl transition-colors"
-                            title="Edit User"
-                          >
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                            </svg>
-                          </button>
-                          <button
-                            onClick={() => handleDeleteClick(user)}
-                            className="p-1.5 text-gray-900 hover:bg-gray-50 rounded-xl transition-colors"
-                            title="Delete User"
-                          >
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* ID */}
-                  <div className="px-2 text-sm text-gray-900 font-medium">
-                    ID: {user.user_id}
-                  </div>
-
-                  {/* Role */}
-                  <div className="px-2">
-                    <div className="inline-flex items-center text-sm font-medium text-emerald-600">
-                      {user.role}
-                    </div>
-                  </div>
-
-                  {/* Department */}
-                  <div className="px-2 mt-[-10px]">
-                    <div className="inline-flex items-center text-sm font-medium text-purple-700">
-                      {user?.dept_name || "No Department"}
-                    </div>
-                  </div>
-
-                  {/* Date */}
-                  <div className="px-2 text-xs text-gray-900">
-                    Joined {new Date(user.created_at).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
-                  </div>
-                </div>
-              </div>
-            ))}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
+                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">Avatar</th>
+                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">Username</th>
+                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">ID</th>
+                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">Role</th>
+                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">Department</th>
+                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">Joined Date</th>
+                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {users
+                  ?.filter(
+                    (user) =>
+                      (selectedDepartment
+                        ? user.dept_name === selectedDepartment
+                        : true) &&
+                      (selectedRole ? user.role === selectedRole : true) &&
+                      (searchQuery
+                        ? user.username.toLowerCase().includes(searchQuery.toLowerCase())
+                        : true)
+                  )
+                  .map((user, index) => (
+                    <tr 
+                      key={user.user_id}
+                      className={`hover:bg-blue-50/50 transition-colors duration-200 ${
+                        index % 2 === 0 ? 'bg-gray-50/50' : 'bg-white'
+                      }`}
+                    >
+                      <td className="px-6 py-5 whitespace-nowrap">
+                        <div className="flex justify-center">
+                          {user.avatar ? (
+                            <div className="relative group">
+                              <img
+                                src={`data:image/jpeg;base64,${user.avatar}`}
+                                alt="Profile"
+                                className="w-16 h-16 rounded-xl object-cover shadow-md border-2 border-gray-100 group-hover:border-blue-200 transition-all duration-200 transform group-hover:scale-105"
+                              />
+                              <div className="hidden group-hover:block absolute top-0 left-0 w-16 h-16 rounded-xl bg-black/20 transition-all duration-200" />
+                            </div>
+                          ) : (
+                            <div className="relative group">
+                              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center text-3xl font-bold text-blue-600 shadow-md border-2 border-gray-100 group-hover:border-blue-200 transition-all duration-200 transform group-hover:scale-105">
+                                {user.username?.charAt(0).toUpperCase()}
+                              </div>
+                              <div className="hidden group-hover:block absolute top-0 left-0 w-16 h-16 rounded-xl bg-black/10 transition-all duration-200" />
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-5 whitespace-nowrap">
+                        <div className="text-base font-bold text-gray-900 text-center">
+                          {user.username}
+                        </div>
+                      </td>
+                      <td className="px-6 py-5 whitespace-nowrap">
+                        <div className="text-base text-gray-600 text-center font-mono font-medium">{user.user_id}</div>
+                      </td>
+                      <td className="px-6 py-5 whitespace-nowrap">
+                        <div className="flex justify-center">
+                          <span className={`
+                            inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold
+                            ${user.role === 'admin' ? 'bg-purple-100 text-purple-700' :
+                              user.role === 'hr' ? 'bg-blue-100 text-blue-700' :
+                              'bg-emerald-100 text-emerald-700'}
+                          `}>
+                            {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-5 whitespace-nowrap">
+                        <div className="flex justify-center">
+                          <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold bg-gray-100 text-gray-700">
+                            {user?.dept_name || "No Department"}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-5 whitespace-nowrap">
+                        <div className="text-base text-gray-600 text-center font-medium">
+                          {new Date(user.created_at).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </div>
+                      </td>
+                      <td className="px-6 py-5 whitespace-nowrap">
+                        <div className="flex justify-center gap-3">
+                          {user.user_id === currentUser.user_id ? (
+                            <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold bg-blue-100 text-blue-800">
+                              Current User
+                            </span>
+                          ) : (
+                            <>
+                              <button
+                                onClick={() => handleEditModal({ ...user, password: "" })}
+                                className="p-2.5 text-blue-600 hover:bg-blue-100 rounded-lg transition-all duration-200 hover:scale-110"
+                                title="Edit User"
+                              >
+                                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                </svg>
+                              </button>
+                              <button
+                                onClick={() => handleDeleteClick(user)}
+                                className="p-2.5 text-red-600 hover:bg-red-100 rounded-lg transition-all duration-200 hover:scale-110"
+                                title="Delete User"
+                              >
+                                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
