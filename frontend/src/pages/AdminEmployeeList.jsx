@@ -430,17 +430,66 @@ function AdminEmployeeList() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
-                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">Avatar</th>
-                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">Username</th>
-                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">ID</th>
-                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">Role</th>
-                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">Department</th>
-                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">Joined Date</th>
-                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">Actions</th>
+                <tr className="bg-gradient-to-r from-gray-100 to-gray-200 border-b border-gray-200">
+                  <th className="px-6 py-5 text-center text-sm font-bold text-gray-800 uppercase tracking-wider w-28">
+                    <div className="flex items-center justify-center gap-2">
+                      <svg className="w-6 h-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span>Avatar</span>
+                    </div>
+                  </th>
+                  <th className="px-6 py-5 text-center text-sm font-bold text-gray-800 uppercase tracking-wider">
+                    <div className="flex items-center justify-center gap-2">
+                      <svg className="w-6 h-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      <span>Username</span>
+                    </div>
+                  </th>
+                  <th className="px-6 py-5 text-center text-sm font-bold text-gray-800 uppercase tracking-wider">
+                    <div className="flex items-center justify-center gap-2">
+                      <svg className="w-6 h-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                      </svg>
+                      <span>ID</span>
+                    </div>
+                  </th>
+                  <th className="px-6 py-5 text-center text-sm font-bold text-gray-800 uppercase tracking-wider">
+                    <div className="flex items-center justify-center gap-2">
+                      <svg className="w-6 h-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      <span>Role</span>
+                    </div>
+                  </th>
+                  <th className="px-6 py-5 text-center text-sm font-bold text-gray-800 uppercase tracking-wider">
+                    <div className="flex items-center justify-center gap-2">
+                      <svg className="w-6 h-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                      </svg>
+                      <span>Department</span>
+                    </div>
+                  </th>
+                  <th className="px-6 py-5 text-center text-sm font-bold text-gray-800 uppercase tracking-wider">
+                    <div className="flex items-center justify-center gap-2">
+                      <svg className="w-6 h-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <span>Joined</span>
+                    </div>
+                  </th>
+                  <th className="px-6 py-5 text-center text-sm font-bold text-gray-800 uppercase tracking-wider">
+                    <div className="flex items-center justify-center gap-2">
+                      <svg className="w-6 h-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                      </svg>
+                      <span>Actions</span>
+                    </div>
+                  </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-100">
                 {employees
                   ?.filter(
                     (user) =>
@@ -454,83 +503,81 @@ function AdminEmployeeList() {
                   .map((employee, index) => (
                     <tr 
                       key={employee.user_id}
-                      className={`hover:bg-blue-50/50 transition-colors duration-200 ${
-                        index % 2 === 0 ? 'bg-gray-50/50' : 'bg-white'
+                      className={`hover:bg-gray-50/90 transition-colors duration-150 ${
+                        index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
                       }`}
                     >
-                      <td className="px-6 py-5 whitespace-nowrap">
+                      <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex justify-center">
                           {employee.avatar ? (
                             <div className="relative group">
                               <img
                                 src={`data:image/jpeg;base64,${employee.avatar}`}
                                 alt="Profile"
-                                className="w-16 h-16 rounded-xl object-cover shadow-md border-2 border-gray-100 group-hover:border-blue-200 transition-all duration-200 transform group-hover:scale-105"
+                                className="w-14 h-14 rounded-xl object-cover ring-2 ring-white shadow-sm group-hover:ring-blue-100 transition-all duration-200"
                               />
-                              <div className="hidden group-hover:block absolute top-0 left-0 w-16 h-16 rounded-xl bg-black/20 transition-all duration-200" />
                             </div>
                           ) : (
                             <div className="relative group">
-                              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center text-3xl font-bold text-blue-600 shadow-md border-2 border-gray-100 group-hover:border-blue-200 transition-all duration-200 transform group-hover:scale-105">
+                              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center text-2xl font-semibold text-blue-600 ring-2 ring-white shadow-sm group-hover:ring-blue-100">
                                 {employee.username?.charAt(0).toUpperCase()}
                               </div>
-                              <div className="hidden group-hover:block absolute top-0 left-0 w-16 h-16 rounded-xl bg-black/10 transition-all duration-200" />
                             </div>
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-5 whitespace-nowrap">
-                        <div className="text-base font-bold text-gray-900 text-center">{employee.username}</div>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-base font-semibold text-gray-900 text-center">{employee.username}</div>
                       </td>
-                      <td className="px-6 py-5 whitespace-nowrap">
-                        <div className="text-base text-gray-600 text-center font-mono font-medium">{employee.user_id}</div>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-base text-gray-500 font-mono text-center">{employee.user_id}</div>
                       </td>
-                      <td className="px-6 py-5 whitespace-nowrap">
+                      <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex justify-center">
                           <span className={`
-                            inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold
-                            ${employee.role === 'admin' ? 'bg-purple-100 text-purple-700' :
-                              employee.role === 'hr' ? 'bg-blue-100 text-blue-700' :
-                              'bg-emerald-100 text-emerald-700'}
+                            inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium
+                            ${employee.role === 'admin' ? 'bg-purple-50 text-purple-700 ring-1 ring-purple-700/10' :
+                              employee.role === 'hr' ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-700/10' :
+                              'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-700/10'}
                           `}>
                             {employee.role.charAt(0).toUpperCase() + employee.role.slice(1)}
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-5 whitespace-nowrap">
+                      <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex justify-center">
-                          <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold bg-gray-100 text-gray-700">
+                          <span className="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium bg-gray-50 text-gray-600 ring-1 ring-gray-500/10">
                             {employee?.dept_name || "No Department"}
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-5 whitespace-nowrap">
-                        <div className="text-base text-gray-600 text-center font-medium">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-base text-gray-500 text-center">
                           {new Date(employee.created_at).toLocaleDateString('en-US', {
                             year: 'numeric',
-                            month: 'long',
+                            month: 'short',
                             day: 'numeric'
                           })}
                         </div>
                       </td>
-                      <td className="px-6 py-5 whitespace-nowrap">
-                        <div className="flex justify-center gap-3">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center justify-center gap-3">
                           <button
                             onClick={() => handleEditModal({ ...employee, password: "" })}
-                            className="p-2.5 text-blue-600 hover:bg-blue-100 rounded-lg transition-all duration-200 hover:scale-110"
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                             title="Edit Employee"
                           >
                             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                             </svg>
                           </button>
                           <button
                             onClick={() => handleDeleteClick(employee)}
-                            className="p-2.5 text-red-600 hover:bg-red-100 rounded-lg transition-all duration-200 hover:scale-110"
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                             title="Delete Employee"
                           >
                             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
                           </button>
                         </div>

@@ -458,14 +458,63 @@ function AdminAllUsersList() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
-                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">Avatar</th>
-                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">Username</th>
-                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">ID</th>
-                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">Role</th>
-                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">Department</th>
-                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">Joined Date</th>
-                  <th className="px-6 py-5 text-center text-sm font-extrabold text-gray-800 uppercase tracking-wider">Actions</th>
+                <tr className="bg-gradient-to-r from-gray-100 to-gray-200 border-b border-gray-200">
+                  <th className="px-6 py-5 text-center text-sm font-bold text-gray-800 uppercase tracking-wider w-28">
+                    <div className="flex items-center justify-center gap-2">
+                      <svg className="w-6 h-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span>Avatar</span>
+                    </div>
+                  </th>
+                  <th className="px-6 py-5 text-center text-sm font-bold text-gray-800 uppercase tracking-wider">
+                    <div className="flex items-center justify-center gap-2">
+                      <svg className="w-6 h-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      <span>Username</span>
+                    </div>
+                  </th>
+                  <th className="px-6 py-5 text-center text-sm font-bold text-gray-800 uppercase tracking-wider">
+                    <div className="flex items-center justify-center gap-2">
+                      <svg className="w-6 h-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                      </svg>
+                      <span>ID</span>
+                    </div>
+                  </th>
+                  <th className="px-6 py-5 text-center text-sm font-bold text-gray-800 uppercase tracking-wider">
+                    <div className="flex items-center justify-center gap-2">
+                      <svg className="w-6 h-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      <span>Role</span>
+                    </div>
+                  </th>
+                  <th className="px-6 py-5 text-center text-sm font-bold text-gray-800 uppercase tracking-wider">
+                    <div className="flex items-center justify-center gap-2">
+                      <svg className="w-6 h-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                      </svg>
+                      <span>Department</span>
+                    </div>
+                  </th>
+                  <th className="px-6 py-5 text-center text-sm font-bold text-gray-800 uppercase tracking-wider">
+                    <div className="flex items-center justify-center gap-2">
+                      <svg className="w-6 h-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <span>Joined</span>
+                    </div>
+                  </th>
+                  <th className="px-6 py-5 text-center text-sm font-bold text-gray-800 uppercase tracking-wider">
+                    <div className="flex items-center justify-center gap-2">
+                      <svg className="w-6 h-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                      </svg>
+                      <span>Actions</span>
+                    </div>
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -509,20 +558,18 @@ function AdminAllUsersList() {
                         </div>
                       </td>
                       <td className="px-6 py-5 whitespace-nowrap">
-                        <div className="text-base font-bold text-gray-900 text-center">
-                          {user.username}
-                        </div>
+                                                <div className="text-base font-semibold text-gray-900 text-center">{user.username}</div>
                       </td>
                       <td className="px-6 py-5 whitespace-nowrap">
-                        <div className="text-base text-gray-600 text-center font-mono font-medium">{user.user_id}</div>
+                        <div className="text-base text-gray-500 font-mono text-center">{user.user_id}</div>
                       </td>
                       <td className="px-6 py-5 whitespace-nowrap">
                         <div className="flex justify-center">
                           <span className={`
-                            inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold
-                            ${user.role === 'admin' ? 'bg-purple-100 text-purple-700' :
-                              user.role === 'hr' ? 'bg-blue-100 text-blue-700' :
-                              'bg-emerald-100 text-emerald-700'}
+                            inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium
+                            ${user.role === 'admin' ? 'bg-purple-50 text-purple-700 ring-1 ring-purple-700/10' :
+                              user.role === 'hr' ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-700/10' :
+                              'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-700/10'}
                           `}>
                             {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
                           </span>
@@ -530,16 +577,16 @@ function AdminAllUsersList() {
                       </td>
                       <td className="px-6 py-5 whitespace-nowrap">
                         <div className="flex justify-center">
-                          <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold bg-gray-100 text-gray-700">
+                          <span className="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium bg-gray-50 text-gray-600 ring-1 ring-gray-500/10">
                             {user?.dept_name || "No Department"}
                           </span>
                         </div>
                       </td>
                       <td className="px-6 py-5 whitespace-nowrap">
-                        <div className="text-base text-gray-600 text-center font-medium">
+                        <div className="text-base text-gray-500 text-center">
                           {new Date(user.created_at).toLocaleDateString('en-US', {
                             year: 'numeric',
-                            month: 'long',
+                            month: 'short',
                             day: 'numeric'
                           })}
                         </div>
