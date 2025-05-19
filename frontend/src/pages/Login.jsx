@@ -39,7 +39,7 @@ const Login = () => {
             navigate("/hr/employees");
             break;
           case "employee":
-            navigate("/employee/home");
+            navigate("/employee/profile");
             break;
           default:
             navigate("/");
