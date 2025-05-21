@@ -60,6 +60,60 @@ const CustomDropdown = ({ value, onChange, departments }) => {
   );
 };
 
+const StatusDropdown = ({ value, onChange }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const statuses = [
+    { label: "All Status", value: "" },
+    { label: "Enabled", value: "0" },
+    { label: "Disabled", value: "1" }
+  ];
+
+  return (
+    <div className="relative">
+      <div 
+        className="bg-white rounded-xl shadow-sm p-2 flex items-center gap-3 border border-gray-100 cursor-pointer"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <div className="px-3 py-2 bg-gray-50 rounded-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+          </svg>
+        </div>
+        <div className="min-w-[200px] px-3 py-2 text-sm text-gray-700 font-medium">
+          {statuses.find(s => s.value === value)?.label || "All Status"}
+          <svg className="h-5 w-5 text-gray-400 absolute right-4 top-1/2 transform -translate-y-1/2" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+          </svg>
+        </div>
+      </div>
+      
+      {isOpen && (
+        <>
+          <div 
+            className="fixed inset-0" 
+            onClick={() => setIsOpen(false)}
+          />
+          <div className="absolute top-full left-0 mt-1 w-full bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
+            {statuses.map((status) => (
+              <div
+                key={status.value}
+                className="px-4 py-2 cursor-pointer text-sm text-gray-700 hover:bg-gray-50"
+                onClick={() => {
+                  onChange(status.value);
+                  setIsOpen(false);
+                }}
+              >
+                {status.label}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
 const Toast = ({ message, type, onClose }) => {
   React.useEffect(() => {
     const timer = setTimeout(() => {
@@ -116,7 +170,7 @@ const Toast = ({ message, type, onClose }) => {
   );
 };
 
-const DeleteConfirmationDialog = ({ isOpen, onClose, onConfirm, employee }) => {
+const DisableConfirmationDialog = ({ isOpen, onClose, onConfirm, employee }) => {
   if (!isOpen) return null;
 
   return (
@@ -135,16 +189,16 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, onConfirm, employee }) => {
             {/* Content */}
             <div className="relative text-center">
               <div className="flex justify-center transform hover:scale-105 transition-transform duration-200">
-                <svg className="w-12 h-12 text-red-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                <svg className="w-12 h-12 text-yellow-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
               </div>
               <h3 className="text-xl leading-6 font-bold text-gray-900 mb-2">
-                Confirm Delete Employee
+                {employee?.is_disabled ? 'Enable Employee' : 'Disable Employee'}
               </h3>
               <div className="mt-2 px-4">
                 <p className="text-sm text-gray-600">
-                  Are you sure you want to delete employee "{employee?.username}"? This action cannot be undone.
+                  Are you sure you want to {employee?.is_disabled ? 'enable' : 'disable'} employee "{employee?.username}"?
                 </p>
               </div>
               <div className="flex justify-center gap-4 mt-6">
@@ -156,9 +210,13 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, onConfirm, employee }) => {
                 </button>
                 <button
                   onClick={onConfirm}
-                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
+                  className={`px-4 py-2 text-white text-sm font-medium rounded-xl transition-all duration-200 shadow-sm hover:shadow-md ${
+                    employee?.is_disabled 
+                      ? 'bg-green-600 hover:bg-green-700' 
+                      : 'bg-yellow-600 hover:bg-yellow-700'
+                  }`}
                 >
-                  Delete Employee
+                  {employee?.is_disabled ? 'Enable Employee' : 'Disable Employee'}
                 </button>
               </div>
             </div>
@@ -226,13 +284,14 @@ function AdminEmployeeList() {
   const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [editModal, setEditModal] = useState(false);
-  const [deleteModal, setDeleteModal] = useState(false);
+  const [disableModal, setDisableModal] = useState(false);
   const [updateModal, setUpdateModal] = useState(false);
-  const [employeeToDelete, setEmployeeToDelete] = useState(null);
+  const [employeeToDisable, setEmployeeToDisable] = useState(null);
   const [toast, setToast] = useState({ show: false, message: "", type: "success" });
   const [searchQuery, setSearchQuery] = useState("");
   const [departments, setDepartments] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
 
   const fetchDepartments = async () => {
     try {
@@ -254,17 +313,17 @@ function AdminEmployeeList() {
     fetchDepartments();
   }, []);
 
-  const handleDeleteClick = (employee) => {
-    setEmployeeToDelete(employee);
-    setDeleteModal(true);
+  const handleDisableClick = (employee) => {
+    setEmployeeToDisable(employee);
+    setDisableModal(true);
   };
 
-  const handleDelete = async () => {
+  const handleDisable = async () => {
     try {
       const response = await axios.post(
-        `${API_URL}removeEmployee`,
+        `${API_URL}${employeeToDisable.is_disabled ? 'enableEmployee' : 'removeEmployee'}`,
         {
-          user_id: employeeToDelete.user_id,
+          user_id: employeeToDisable.user_id,
         },
         { withCredentials: true }
       );
@@ -272,27 +331,27 @@ function AdminEmployeeList() {
       if (response.data.type === "success") {
         setToast({
           show: true,
-          message: `Successfully removed employee "${employeeToDelete.username}"`,
+          message: `Successfully ${employeeToDisable.is_disabled ? 'enabled' : 'disabled'} employee "${employeeToDisable.username}"`,
           type: "success"
         });
         fetchAllEmployees();
       } else {
         setToast({
           show: true,
-          message: response.data.message || "Failed to remove employee",
+          message: response.data.message || `Failed to ${employeeToDisable.is_disabled ? 'enable' : 'disable'} employee`,
           type: "error"
         });
       }
     } catch (error) {
-      console.error("Error deleting employee:", error);
+      console.error("Error updating employee status:", error);
       setToast({
         show: true,
-        message: "An error occurred while removing the employee",
+        message: `An error occurred while ${employeeToDisable.is_disabled ? 'enabling' : 'disabling'} the employee`,
         type: "error"
       });
     }
-    setDeleteModal(false);
-    setEmployeeToDelete(null);
+    setDisableModal(false);
+    setEmployeeToDisable(null);
   };
 
   const handleEditModal = async (employee) => {
@@ -377,14 +436,14 @@ function AdminEmployeeList() {
           onClose={() => setToast({ ...toast, show: false })}
         />
       )}
-      <DeleteConfirmationDialog
-        isOpen={deleteModal}
+      <DisableConfirmationDialog
+        isOpen={disableModal}
         onClose={() => {
-          setDeleteModal(false);
-          setEmployeeToDelete(null);
+          setDisableModal(false);
+          setEmployeeToDisable(null);
         }}
-        onConfirm={handleDelete}
-        employee={employeeToDelete}
+        onConfirm={handleDisable}
+        employee={employeeToDisable}
       />
       <UpdateConfirmationDialog
         isOpen={updateModal}
@@ -423,6 +482,12 @@ function AdminEmployeeList() {
               onChange={setSelectedDepartment}
               departments={departments}
             />
+
+            {/* Status Filter */}
+            <StatusDropdown
+              value={selectedStatus}
+              onChange={setSelectedStatus}
+            />
           </div>
         </div>
 
@@ -445,14 +510,6 @@ function AdminEmployeeList() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
                       <span>Username</span>
-                    </div>
-                  </th>
-                  <th className="px-6 py-5 text-center text-sm font-bold text-gray-800 uppercase tracking-wider">
-                    <div className="flex items-center justify-center gap-2">
-                      <svg className="w-6 h-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
-                      </svg>
-                      <span>ID</span>
                     </div>
                   </th>
                   <th className="px-6 py-5 text-center text-sm font-bold text-gray-800 uppercase tracking-wider">
@@ -498,8 +555,12 @@ function AdminEmployeeList() {
                         : true) &&
                       (searchQuery
                         ? user.username.toLowerCase().includes(searchQuery.toLowerCase())
+                        : true) &&
+                      (selectedStatus !== ""
+                        ? user.is_disabled.toString() === selectedStatus
                         : true)
                   )
+                  .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
                   .map((employee, index) => (
                     <tr 
                       key={employee.user_id}
@@ -519,7 +580,7 @@ function AdminEmployeeList() {
                             </div>
                           ) : (
                             <div className="relative group">
-                              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center text-2xl font-semibold text-blue-600 ring-2 ring-white shadow-sm group-hover:ring-blue-100">
+                              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center text-2xl font-semicdbold text-blue-600 ring-2 ring-white shadow-sm group-hover:ring-blue-100">
                                 {employee.username?.charAt(0).toUpperCase()}
                               </div>
                             </div>
@@ -527,10 +588,14 @@ function AdminEmployeeList() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-base font-semibold text-gray-900 text-center">{employee.username}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-base text-gray-500 font-mono text-center">{employee.user_id}</div>
+                        <div className="flex items-center justify-center gap-2">
+                          <span className="text-base font-semibold text-gray-900">{employee.username}</span>
+                          {employee.is_disabled === 1 && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-50 text-red-700 ring-1 ring-red-700/10">
+                              Disabled
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex justify-center">
@@ -564,21 +629,36 @@ function AdminEmployeeList() {
                         <div className="flex items-center justify-center gap-3">
                           <button
                             onClick={() => handleEditModal({ ...employee, password: "" })}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                            title="Edit Employee"
+                            className={`p-2 rounded-lg transition-colors ${
+                              employee.is_disabled 
+                                ? 'text-gray-400 cursor-not-allowed opacity-50' 
+                                : 'text-blue-600 hover:bg-blue-50'
+                            }`}
+                            title={employee.is_disabled ? "Enable employee first to edit" : "Edit Employee"}
+                            disabled={employee.is_disabled}
                           >
                             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                             </svg>
                           </button>
                           <button
-                            onClick={() => handleDeleteClick(employee)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                            title="Delete Employee"
+                            onClick={() => handleDisableClick(employee)}
+                            className={`p-2 rounded-lg transition-colors ${
+                              employee.is_disabled 
+                                ? 'text-green-600 hover:bg-green-50' 
+                                : 'text-yellow-600 hover:bg-yellow-50'
+                            }`}
+                            title={employee.is_disabled ? "Enable Employee" : "Disable Employee"}
                           >
+                            {employee.is_disabled ? (
+                              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                            ) : (
                             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
+                            )}
                           </button>
                         </div>
                       </td>

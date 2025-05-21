@@ -55,6 +55,9 @@ switch ($action) {
     case 'removeEmployee':
         removeEmployee();
         break;
+    case 'enableEmployee':
+        enableEmployee();
+        break;
     case 'getAllUsersCount':
         getAllUsersCount();
         break;
@@ -117,7 +120,7 @@ function loginUser()
     $username = $data['username'];
     $password = $data['password'];
 
-    $sql = "SELECT user_id, role, password FROM users WHERE username = ?";
+    $sql = "SELECT user_id, role, password, is_disabled FROM users WHERE username = ?";
     $stmt = $connect->prepare($sql);
 
     $stmt->bind_param('s', $username);
@@ -125,13 +128,15 @@ function loginUser()
 
     $result = $stmt->get_result();
 
-
     if ($result->num_rows > 0) {
-
         $user = $result->fetch_assoc();
 
-        if (password_verify($password, $user['password'])) {
-
+        if ($user['is_disabled'] === 1) {
+            $response = [
+                'type' => 'error',
+                'message' => 'This account has been disabled. Please contact your administrator.'
+            ];
+        } else if (password_verify($password, $user['password'])) {
             $_SESSION['user_id'] = $user['user_id'];
             $_SESSION['role'] = $user['role'];
 
@@ -294,15 +299,16 @@ function removeEmployee()
     $user_id = $_SESSION['user_id'];
     $currentUserRole = $_SESSION['role'];
 
-    $sql = "DELETE FROM users WHERE user_id = ?";
+    // Update the user's disabled status instead of deleting
+    $sql = "UPDATE users SET is_disabled = 1 WHERE user_id = ?";
     $stmt = $connect->prepare($sql);
     $stmt->bind_param("s", $employee_id);
 
     if ($stmt->execute()) {
         $stmt->close();
 
-        $action = "delete_user";
-        $details = "User_ID $user_id ($currentUserRole) removed user_id '$employee_id'";
+        $action = "disable_user";
+        $details = "User_ID $user_id ($currentUserRole) disabled user_id '$employee_id'";
 
         $logSql = "INSERT INTO activity_logs (user_id, action, details) VALUES (?, ?, ?)";
         $logStmt = $connect->prepare($logSql);
@@ -310,16 +316,57 @@ function removeEmployee()
         $logStmt->execute();
         $logStmt->close();
 
+        $response = [
+            "type" => "success",
+            "message" => "User Disabled Successfully"
+        ];
+    } else {
+        $response = [
+            "type" => "error",
+            "message" => "Failed to disable user"
+        ];
+    }
+
+    echo json_encode($response);
+}
+
+function enableEmployee()
+{
+    session_start();
+    global $connect;
+
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    $employee_id = $data['user_id'];
+
+    $user_id = $_SESSION['user_id'];
+    $currentUserRole = $_SESSION['role'];
+
+    // Update the user's disabled status to re-enable them
+    $sql = "UPDATE users SET is_disabled = 0 WHERE user_id = ?";
+    $stmt = $connect->prepare($sql);
+    $stmt->bind_param("s", $employee_id);
+
+    if ($stmt->execute()) {
+        $stmt->close();
+
+        $action = "enable_user";
+        $details = "User_ID $user_id ($currentUserRole) enabled user_id '$employee_id'";
+
+        $logSql = "INSERT INTO activity_logs (user_id, action, details) VALUES (?, ?, ?)";
+        $logStmt = $connect->prepare($logSql);
+        $logStmt->bind_param("iss", $user_id, $action, $details);
+        $logStmt->execute();
+        $logStmt->close();
 
         $response = [
             "type" => "success",
-            "message" => " User Removed"
+            "message" => "User Enabled Successfully"
         ];
     } else {
-
         $response = [
             "type" => "error",
-            "message" => "Failed to remove user"
+            "message" => "Failed to enable user"
         ];
     }
 
@@ -805,18 +852,23 @@ function fetchAllEmployees()
     u.role, 
     u.user_id, 
     u.username, 
-    u.created_at, 
+    u.created_at,
+    u.is_disabled,
     d.dept_name 
 FROM users u
-LEFT JOIN departments d ON u.dept_id = d.dept_id WHERE role = "employee" ';
+LEFT JOIN departments d ON u.dept_id = d.dept_id 
+WHERE role = "employee"';
     $stmt = $connect->prepare($sql);
     $stmt->execute();
 
     $result = $stmt->get_result();
     $employees = [];
     while ($row = $result->fetch_assoc()) {
-
-        $row['avatar'] = base64_encode($row['avatar']);
+        if (isset($row['avatar'])) {
+            $row['avatar'] = base64_encode($row['avatar']);
+        }
+        // Ensure username is a clean string
+        $row['username'] = trim($row['username']);
         $employees[] = $row;
     }
 
@@ -833,6 +885,7 @@ function fetchAllUsers()
                 u.user_id, 
                 u.username, 
                 u.created_at, 
+                u.is_disabled,
                 d.dept_name 
             FROM users u
             LEFT JOIN departments d ON u.dept_id = d.dept_id';
