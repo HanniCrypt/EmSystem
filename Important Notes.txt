@@ -1,0 +1,10 @@
+emsystem - folder name
+em_system - dbs name
+
+admin login:
+uname - roince
+pass - admin	
+
+hr login:
+uname - jovanni
+pass - empl
