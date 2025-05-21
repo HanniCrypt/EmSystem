@@ -168,7 +168,7 @@ const AdminLogs = () => {
     fetchActivityLogs();
   }, []);
 
-  const actions = ["add_user", "delete_user", "update_user"];
+  const actions = ["add_user", "delete_user", "update_user", "disable_user", "enable_user"];
 
   const filteredLogs = logs?.filter(log => selectedAction ? log.action === selectedAction : true);
   const totalPages = Math.ceil(filteredLogs.length / logsPerPage);
