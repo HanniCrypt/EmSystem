@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 21, 2025 at 09:42 AM
+-- Generation Time: May 21, 2025 at 10:03 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -34,99 +34,6 @@ CREATE TABLE `activity_logs` (
   `details` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `activity_logs`
---
-
-INSERT INTO `activity_logs` (`log_id`, `user_id`, `action`, `details`, `created_at`) VALUES
-(102, 50, 'update_user', 'User_ID 50 (admin) updated user_id \'68\' with username \'Ruwins\', updated avatar, changed role to \'admin\'', '2025-05-19 00:43:17'),
-(103, 50, 'add_user', 'User_ID 50 (admin) added user \'empl\' with role \'employee\'', '2025-05-19 01:07:04'),
-(104, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'66\'', '2025-05-21 05:01:56'),
-(105, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'70\'', '2025-05-21 05:03:05'),
-(106, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'66\'', '2025-05-21 05:04:10'),
-(107, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'66\'', '2025-05-21 05:04:26'),
-(108, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'70\'', '2025-05-21 05:06:08'),
-(109, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'70\'', '2025-05-21 05:06:12'),
-(110, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'69\'', '2025-05-21 05:06:16'),
-(111, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'66\'', '2025-05-21 05:06:27'),
-(112, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'70\'', '2025-05-21 05:09:16'),
-(113, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'66\'', '2025-05-21 05:15:24'),
-(114, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'66\'', '2025-05-21 05:15:28'),
-(115, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'66\'', '2025-05-21 05:27:56'),
-(116, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'66\'', '2025-05-21 05:28:04'),
-(117, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'66\'', '2025-05-21 05:36:24'),
-(118, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'66\'', '2025-05-21 05:36:33'),
-(119, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'69\'', '2025-05-21 05:36:38'),
-(120, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'69\'', '2025-05-21 05:36:42'),
-(121, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'69\'', '2025-05-21 05:36:51'),
-(122, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'66\'', '2025-05-21 05:37:13'),
-(123, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'66\'', '2025-05-21 05:37:17'),
-(124, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'66\'', '2025-05-21 05:37:42'),
-(125, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'66\'', '2025-05-21 05:37:46'),
-(126, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'66\'', '2025-05-21 05:37:49'),
-(127, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'66\'', '2025-05-21 05:38:02'),
-(128, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'70\'', '2025-05-21 05:38:11'),
-(129, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'70\'', '2025-05-21 05:38:27'),
-(130, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'66\'', '2025-05-21 05:39:07'),
-(131, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'66\'', '2025-05-21 05:39:18'),
-(132, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'66\'', '2025-05-21 05:41:29'),
-(133, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'66\'', '2025-05-21 05:42:57'),
-(134, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'66\'', '2025-05-21 05:44:04'),
-(135, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'66\'', '2025-05-21 05:46:26'),
-(136, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'66\'', '2025-05-21 05:47:13'),
-(137, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'66\'', '2025-05-21 05:49:07'),
-(138, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'66\'', '2025-05-21 05:49:15'),
-(139, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'69\'', '2025-05-21 05:49:21'),
-(140, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'70\'', '2025-05-21 05:49:25'),
-(141, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'70\'', '2025-05-21 05:49:37'),
-(142, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'69\'', '2025-05-21 05:49:41'),
-(143, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'66\'', '2025-05-21 05:49:44'),
-(144, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'66\'', '2025-05-21 05:52:17'),
-(145, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'66\'', '2025-05-21 05:52:46'),
-(146, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'66\'', '2025-05-21 05:54:11'),
-(147, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'69\'', '2025-05-21 05:57:07'),
-(148, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'69\'', '2025-05-21 05:57:17'),
-(149, 50, 'add_user', 'User_ID 50 (admin) added user \'Daril\' with role \'employee\'', '2025-05-21 05:59:19'),
-(150, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'66\'', '2025-05-21 06:00:26'),
-(151, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'71\'', '2025-05-21 06:03:31'),
-(152, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'66\'', '2025-05-21 06:06:13'),
-(153, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'70\'', '2025-05-21 06:06:20'),
-(154, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'69\'', '2025-05-21 06:06:29'),
-(155, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'66\'', '2025-05-21 06:08:48'),
-(156, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'69\'', '2025-05-21 06:08:51'),
-(157, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'70\'', '2025-05-21 06:08:55'),
-(158, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'71\'', '2025-05-21 06:08:57'),
-(159, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'66\'', '2025-05-21 06:09:02'),
-(160, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'66\'', '2025-05-21 06:19:26'),
-(161, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'66\'', '2025-05-21 06:19:45'),
-(162, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'71\'', '2025-05-21 06:22:36'),
-(163, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'66\'', '2025-05-21 06:26:28'),
-(164, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'66\'', '2025-05-21 06:38:58'),
-(165, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'69\'', '2025-05-21 06:58:02'),
-(166, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'69\'', '2025-05-21 06:58:12'),
-(167, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'70\'', '2025-05-21 06:58:19'),
-(168, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'70\'', '2025-05-21 06:58:25'),
-(169, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'71\'', '2025-05-21 06:58:28'),
-(170, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'67\'', '2025-05-21 06:58:37'),
-(171, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'66\'', '2025-05-21 06:58:52'),
-(172, 50, 'update_user', 'User_ID 50 (admin) updated user_id \'66\' with username \'Jovanni\', updated avatar, changed password, changed role to \'employee\'', '2025-05-21 06:59:41'),
-(173, 50, 'update_user', 'User_ID 50 (admin) updated user_id \'69\' with username \'Julkwe\', updated avatar, changed password, changed role to \'employee\'', '2025-05-21 07:00:38'),
-(174, 50, 'update_user', 'User_ID 50 (admin) updated user_id \'66\' with username \'Jovanni\', updated avatar, changed role to \'employee\'', '2025-05-21 07:03:19'),
-(175, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'66\'', '2025-05-21 07:03:29'),
-(176, 50, 'update_user', 'User_ID 50 (admin) updated user_id \'68\' with username \'Ruwins\', updated avatar, changed password, changed role to \'admin\'', '2025-05-21 07:04:37'),
-(177, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'66\'', '2025-05-21 07:04:49'),
-(178, 50, 'update_user', 'User_ID 50 (admin) updated user_id \'66\' with username \'Jovanni\', updated avatar, changed role to \'hr\'', '2025-05-21 07:05:00'),
-(179, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'66\'', '2025-05-21 07:07:20'),
-(180, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'66\'', '2025-05-21 07:08:07'),
-(181, 66, 'disable_user', 'User_ID 66 (hr) disabled user_id \'69\'', '2025-05-21 07:16:25'),
-(182, 50, 'disable_user', 'User_ID 50 (admin) disabled user_id \'71\'', '2025-05-21 07:29:41'),
-(183, 50, 'enable_user', 'User_ID 50 (admin) enabled user_id \'71\'', '2025-05-21 07:30:14'),
-(184, 50, 'add_user', 'User_ID 50 (admin) added user \'Jake\' with role \'employee\'', '2025-05-21 07:31:16'),
-(185, 50, 'add_user', 'User_ID 50 (admin) added user \'Ryan\' with role \'hr\'', '2025-05-21 07:31:33'),
-(186, 50, 'add_user', 'User_ID 50 (admin) added user \'Rjay\' with role \'employee\'', '2025-05-21 07:31:45'),
-(187, 50, 'add_user', 'User_ID 50 (admin) added user \'Jayson\' with role \'employee\'', '2025-05-21 07:32:21'),
-(188, 66, 'update_user', 'User_ID 66 (hr) updated user_id \'66\' with username \'Jovanni\', updated avatar', '2025-05-21 07:40:33');
 
 -- --------------------------------------------------------
 
@@ -289,7 +196,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=189;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=197;
 
 --
 -- AUTO_INCREMENT for table `departments`
@@ -319,7 +226,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=77;
 
 --
 -- Constraints for dumped tables
